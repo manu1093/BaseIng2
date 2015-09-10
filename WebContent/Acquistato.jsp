@@ -1,5 +1,5 @@
 <%@page import="java.util.ArrayList"%>
-<%@page import="database.Prodotto"%>
+<%@page import="database.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -15,41 +15,54 @@
 <%! String indietro="<FORM METHOD=GET ACTION=\"/BaseIng2/index.jsp\"><INPUT TYPE=\"submit\" value=\"Indietro\"></FORM>"; %>
 
 <%
-String codice=(String) session.getAttribute("codice");
-String nickname=(String) session.getAttribute("nickname");
-if (nickname==null || nickname=="")
+String nickname=utente.getNickname();
+Database db=new Database();
+
+//Istanzio la lista carrello
+ArrayList<Carrello> lista_carrello= new ArrayList<Carrello>();
+lista_carrello=db.visualizzaCarrello(utente);
+
+
+if (nickname==null || nickname=="" || lista_carrello.isEmpty())
 {
 	response.sendRedirect("/BaseIng2/Logout");
 }
 else
 {
-	out.print("Grazie "+nickname+" <br>per aver acquistato n. "+request.getParameter("quantita")+" pezzi del seguente articolo");	
-}
-ArrayList<Prodotto> lista= new ArrayList<Prodotto>();
-lista=(ArrayList<Prodotto>)session.getAttribute("lista_prodotti");
-if (lista.isEmpty())
-{
-	out.print("Lista vuota");
-	response.sendRedirect("/BasiIng2/Logout");
-	out.println("<br>"+logged);
-}
-else
-{
-	out.println("<table>");
-	for(Prodotto p: lista)
+	if (utente.getCartaCredito()==null || utente.getPIN()==null)
+		response.sendRedirect("BaseIng2/paginaPersonale.jsp");
+	else
 	{
-		if (codice.equals((String)p.getCodice()))
+		out.print("Grazie "+nickname+" <br>per aver acquistato ");
+		
+		for(Carrello p: lista_carrello)
 		{
-			out.println("<tr><td>Nome: "+p.getNome()+"</td>");
-			//out.println("<td>URL immagine "+p.getImmagine()+"</td>");
-			out.println("<td><img src=\""+p.getImmagine()+"\" width=200 height=200></td>");
-			out.println("<td>Costo complessivo"+p.getPrezzo()*(Float.parseFloat(request.getParameter("quantita")))+"</td></tr>");
+				if (p.getProdotto()==null)
+					continue;
+				else
+				{
+					out.println("<br>Nome: "+p.getProdotto());
+					//out.println(p.getProdotto());
+					out.println("<img src=\""+db.getProdotto(p.getProdotto()).getImmagine().toString()+"\" width=200 height=200>");
+					out.println("Prezzo "+db.getProdotto(p.getProdotto()).getPrezzo());
+					out.print("Quantità acquistate: "+p.getQuantita());
+					
+					db.acquistaCarrello(db.getCliente(nickname));
+					
+				}
+				
 		}
+		db.refreshUtente(session, utente);
+		out.println("<br><br>"+indietro);
+	
+	
 	}
-	out.println("</table>");
+	
+	
+	
+	
 }
-out.print("<BR><BR>"+logged);
-out.print("<BR><BR>"+indietro);
+
 %>
 </body>
 </html>

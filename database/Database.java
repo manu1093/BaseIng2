@@ -15,6 +15,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.servlet.http.HttpSession;
+
 import java.lang.IllegalArgumentException;
 import java.sql.PreparedStatement;
 import java.util.Calendar;
@@ -30,7 +33,7 @@ public class Database {
 		
 	      try {
 	         Class.forName("org.postgresql.Driver");
-	         conn = DriverManager.getConnection("jdbc:postgresql://dbserver.scienze.univr.it/dblab54","userlab54", "cinquantaquattroSH");
+	         conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432","stefano83", "as0ohlt0");
 	         conn.setAutoCommit(true);
 	         System.out.println("Opened database successfully");
 	      } catch (Exception e) {
@@ -217,17 +220,13 @@ public class Database {
         public void acquistaCarrello(Cliente u){// non controllato
             try{
                 this.conn.setAutoCommit(false);                
-              ResultSet t=this.conn.createStatement().executeQuery
-                                            ("select carrello.id,carrello.qunatita,carrello.utente,carrello.id_oggetto"
-                                                    + "from carrello,utente,prodotto"
-                                                    + "where utente.nickname="+((Utente)u).getNickname());
-              
+              ResultSet t=this.conn.createStatement().executeQuery("select carrello.id,carrello.qunatita,carrello.utente,carrello.id_oggetto from carrello,utente,prodotto where utente.nickname='"+((Utente)u).getNickname()+"';");              
               while(t.next()){
                   this.conn.createStatement().executeUpdate("delete carrello where id="+t.getString("id"));
                   this.conn.createStatement().executeUpdate("update prodotto set quantita=quantità-"+t.getInt(2)+" where codice='"+t.getString(4)+"';");
                   PreparedStatement ssss=this.conn.prepareStatement("insert into acquisto (data_ac,quantita,utente,id_oggetto) values ?,?,?,?;");
                   Calendar c=Calendar.getInstance();
-                  ssss.setString(1,c.get(Calendar.DAY_OF_MONTH)+"/"+c.get(Calendar.MONTH)+"/"+c.get(Calendar.YEAR));
+                  ssss.setString(1,c.get(c.get("'"+Calendar.YEAR)+"-"+c.get(Calendar.MONTH)+"-"+Calendar.DAY_OF_MONTH)+"'");
                   ssss.setInt(2, t.getInt(2));
                   ssss.setString(3, t.getString(3));
                   ssss.setString(4, t.getString(4));
@@ -271,7 +270,13 @@ public class Database {
              this.conn.createStatement().execute("delete from categoria where nome='"+s+"';");
         }
         
-       
+        public void refresh(HttpSession session)
+        {
+        	Database db=new Database();
+        	Utente u=new Utente(utente.getNickname(),utente.getPass());
+        	session.removeAttribute("utente");
+        	session.setAttribute("utente", (Cliente) db.login(u));
+        }
         
         
         public static void main(String args[]) throws SQLException{

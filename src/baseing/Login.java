@@ -1,5 +1,7 @@
 package baseing;
 import java.io.IOException;
+import java.util.ArrayList;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -21,6 +23,9 @@ public class Login extends HttpServlet {
     /**
      * @see HttpServlet#HttpServlet()
      */
+	public int num_prod=3;
+	
+	
     public Login() {
         super();
         
@@ -29,11 +34,7 @@ public class Login extends HttpServlet {
     
    private void redireziona(String url, HttpServletResponse response) throws IOException
    {
-	   response.getWriter().append("<script type=\"text/javascript\">function redirectToLogin(){ document.location = '"+url+"' }");
-	   response.getWriter().append("setTimeout( redirectToLogin, 300 );</script>");
-    
-
-	
+	   response.sendRedirect(url);
 	}
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -44,34 +45,38 @@ public class Login extends HttpServlet {
 		// TODO Auto-generated method stub
 		HttpSession session =request.getSession();
 		response.setContentType("text/html");
-		//response.getWriter().append("Ciao ").append((CharSequence) request.getParameter("nickname"));
-		//response.getWriter().append(" con password ").append((CharSequence) request.getParameter("password"));
 		Utente u= new Utente((String) request.getParameter("nickname"),(String) request.getParameter("password"));
-		//System.out.println(u);
 		Database db=new Database();
 		u=db.login(u);
 		if(u instanceof Cliente)
 		{
 			u.setNickname((String) request.getParameter("nickname"));
 			session.setAttribute("utente",(Cliente) u);
-			session.setAttribute("lista_carrello", db.visualizzaCarrello(u));
-			session.setAttribute("lista_prodotti", db.ProdottiPreferiti(3, (Cliente) u ));
+			db.refreshUtente(session,(Cliente) u);
+			ArrayList<Prodotto> l=new ArrayList<Prodotto>();
+			l=db.ProdottiPreferiti(num_prod, (Cliente) u );
+			l.addAll(db.ProdottiACaso(num_prod-l.size()));
+			session.setAttribute("lista_prodotti", l );
+			
 			response.sendRedirect("/BaseIng2/index.jsp");
 			
 		}
 		else if (u instanceof Admin)
 		{
-			
-			u.setNickname((String) request.getParameter("nickname"));
 			session.setAttribute("utente",(Admin) u);
+			db.refreshAdmin(session, (Admin) u);
+			System.out.println("login.jsp debug admin"+u.getNickname()+u.getPass());
+			response.sendRedirect("/BaseIng2/AdminList.jsp");
 		}
 		else if (u instanceof Impiegato)
 		{
-			u.setNickname((String) request.getParameter("nickname"));
 			session.setAttribute("utente", (Impiegato) u);
+			db.refreshImpiegato(session, (Impiegato) u);
+			System.out.println("login.jsp debug impiegato"+u.getNickname()+u.getPass());
 		}
 		else
 		{
+			session.setAttribute("lista_prodotti", db.ProdottiACaso(3));
 			this.redireziona("/BaseIng2/index.jsp", response);
 			
 		}
