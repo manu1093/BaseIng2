@@ -5,6 +5,9 @@
  */
 package database;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -16,6 +19,7 @@ public class Acquisto {
     private String prodotto;
     private int quantita;
     private Date data;
+    private String ora;
 
     public String getUtente() {
         return utente;
@@ -48,6 +52,17 @@ public class Acquisto {
     public void setData(Date data) {
         this.data = data;
     }
+    
+    public String getOra() {
+        return ora;
+    }
+
+    public void setOra() {
+		Date d=new Date();
+		DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+        this.ora = dateFormat.format(d);
+    }
+
 
     public Acquisto() {
         data=new Date();

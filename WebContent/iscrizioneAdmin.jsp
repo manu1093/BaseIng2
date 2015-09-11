@@ -11,12 +11,14 @@
 <body>
 <jsp:useBean id="admin" class="database.Admin" scope="session"/>
 <jsp:setProperty name="admin" property="*"/>
-
+<%! String indietro="<FORM METHOD=GET ACTION=\"/BaseIng2/AdminList.jsp\"><INPUT TYPE=\"submit\" value=\"Indietro\"></FORM>"; %>
+<%! String logged="<FORM METHOD=GET ACTION=\"/BaseIng2/Logout\"><INPUT TYPE=\"submit\" value=\"Logout\"></FORM>"; %>
 Inserisci un nuovo utente personale interno e scegli il ruolo.
 <%
-//if (!(admin.getNickname().isEmpty() || admin.getNickname()==""))
-//{
-	out.println("<form method=post action=\"/BaseIng2/IscrittoAdmin.jsp\">");
+if (!(admin.getNickname().isEmpty() || admin.getNickname()==""))
+{
+
+	out.println("<form method=GET action=\"/BaseIng2/IscrittoAdmin.jsp\">");
 	out.println("Nickname: <input type=\"text\" name=\"nickname\"><br>");
 	out.println("Password: <input type=\"password\" name=\"pass\" ><br>");
 	
@@ -31,12 +33,15 @@ Inserisci un nuovo utente personale interno e scegli il ruolo.
 	
 	out.println("<input type=\"submit\" value=\"Salva\">");	
 	out.println("</form>"); 
-/*}
+	out.println("<br>"+indietro);
+	out.println("<br>"+logged);
+	db.closeConnection();
+}
 else
 {
 	
 }
-*/
+
 %>
 </body>
 </html>

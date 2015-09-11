@@ -2,22 +2,25 @@
 <%@page import="database.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<jsp:useBean id="grafica" class="grafica.Grafica" scope="session"/>
+<jsp:setProperty name="grafica" property="*"/>
+<jsp:useBean id="pulsante" class="grafica.pulsante" scope="session"/>
+<jsp:setProperty name="pulsante" property="*"/>
 <jsp:useBean id="utente" class="database.Cliente" scope="session"/>
 <jsp:setProperty name="utente" property="*"/>
+<jsp:useBean id="admin" class="database.Admin" scope="session"/>
+<jsp:setProperty name="admin" property="*"/>
+<jsp:useBean id="impiegato" class="database.Impiegato" scope="session"/>
+<jsp:setProperty name="impiegato" property="*"/>
 
-<%! String logged="<FORM METHOD=GET ACTION=\"/BaseIng2/Logout\"><INPUT TYPE=\"submit\" value=\"Logout\"></FORM>"; %>
-<%! String not_logged="<FORM METHOD=GET ACTION=\"/BaseIng2/Logout\"><INPUT TYPE=\"submit\" value=\"Indietro\"></FORM>";  %>
-<%! String indietro="<FORM METHOD=GET ACTION=\"/BaseIng2/index.jsp\"><INPUT TYPE=\"submit\" value=\"Indietro\"></FORM>"; %>
 <%
-//Parametri iniziali
-String codice=request.getParameter("codice");
+String codice=request.getParameter("codice");		//Parametri iniziali
+
+
+
+
+out.println(grafica.getIntestazione());
+
 
 
 if (!(utente.getNickname().isEmpty() || utente.getNickname()==""))//utente loggato
@@ -27,7 +30,7 @@ if (!(utente.getNickname().isEmpty() || utente.getNickname()==""))//utente logga
 	ArrayList<Carrello> lista_carrello= new ArrayList<Carrello>();
 	lista_carrello=db.visualizzaCarrello(utente);
 		
-	if (!(codice==null || codice==""))
+	if (!(codice==null || codice==""))	//è stato passato un oggetto tramite request
 	{
 		out.println("Ciao "+utente.getNickname());
 		out.print("Hai scelto l'oggetto ");
@@ -37,12 +40,11 @@ if (!(utente.getNickname().isEmpty() || utente.getNickname()==""))//utente logga
 		lista=(ArrayList<Prodotto>)session.getAttribute("lista_prodotti");
 		
 	
-		//Inizializzo la stampa a video dei prodotti a caso (sarà da perfezionare con la scelta della categoria preferita dell'utente)
+		//Inizializzo la stampa a video dei prodotti a caso 
 		//la lista è lista_prodotti (presente nella session)
-		//!!!!Attenzione all'indirizzo della form!
 		if (lista.isEmpty())	//succede mai
 		{
-			lista=db.ProdottiPreferiti(3, utente);
+			lista=db.ProdottiPreferiti(6, utente);
 			System.out.print("Lista vuota");
 			response.sendRedirect("/BasiIng2/Logout");
 		}
@@ -51,25 +53,18 @@ if (!(utente.getNickname().isEmpty() || utente.getNickname()==""))//utente logga
 			
 			Prodotto p= new Prodotto();
 			p=db.getProdotto(codice);
-			out.print("<FORM METHOD=POST ACTION=\"/BaseIng2/Aggiungi?codice="+p.getCodice()+"\">");
-			out.println("<table border=1>");
-			out.print("<tr><td>Nome: "+p.getNome()+"</td>");
-			out.print("<td><img src=\""+p.getImmagine()+"\" width=200 height=200></td>");
-			out.print("<td>Prezzo "+p.getPrezzo()+"</td></tr>");
-			out.print("<tr><td>Quantità da acquistare <select name=\"quantita\"> ");
-			int i=1;
-			while (i<=p.getPezzi())
-			{
-				out.println("<option value="+i+">"+i+"</option>");
-				i++;
-			}
-			out.print("</select>");
-			out.print(" su "+p.getPezzi()+" disponibili </td></tr>");
-			out.print("<tr><td>Acquisterai con la tua carta di credito "+ utente.getCartaCredito()+"</td> ");
-			out.print("<td><INPUT TYPE=\"submit\" value=\"aggiungi al carrello\"></td></tr>");
-			out.print("</table></FORM>");
-				
+			
+			
+			grafica.setProdottoOsservato(p);
+			out.println(grafica.getProdottoOsservato());	//Stampa il prodotto osservato
+			
+			out.println("Potrebbe interessarti anche: ");
+			lista=db.ProdottiPreferiti(2, p.getCategoria());
+			grafica.setListaProdotti(lista);
+			out.println(grafica.getListaProdotti());
+			
 		}
+		db.closeConnection();
 	}
 	else
 	{
@@ -84,65 +79,67 @@ if (!(utente.getNickname().isEmpty() || utente.getNickname()==""))//utente logga
 		}
 		else
 		{
-			out.println("Il tuo carrello attuale");
+			grafica.setListaCarrello(lista_carrello);
+			out.println(grafica.getListaCarrello());
 		
-			for(Carrello p: lista_carrello)
-			{
-					if (p.getProdotto()==null)
-						continue;
-					else
-					{
-						out.println("<br>Nome: "+p.getProdotto());
-						out.println("<FORM METHOD=POST ACTION=\"/BaseIng2/Rimuovi?codice="+p.getProdotto()+"\">");
-						//out.println(p.getProdotto());
-						out.println("<br><img src=\""+db.getProdotto(p.getProdotto()).getImmagine().toString()+"\" width=200 height=200>");
-						out.println("<br>Prezzo "+db.getProdotto(p.getProdotto()).getPrezzo());
-						out.print("<br>Quantità da acquistare: "+p.getQuantita());
-						out.print("<br>su +"+db.getProdotto(p.getProdotto()).getPezzi()+"disponibili");
-						out.print("<br><INPUT TYPE=\"submit\" value=\"Rimuovi dal carrello\"></FORM>");
-					}
-					
-			}
-			
-			out.println("<br><br><FORM METHOD=GET ACTION=\"/BaseIng2/Acquistato.jsp\">");
+			pulsante.setPagina("Acquistato.jsp");//bottone Carrello
 			out.println("Acquisterai con la tua carta di credito "+ utente.getCartaCredito());
-			out.print("<INPUT TYPE=\"submit\" value=\"compra adesso\"></FORM>");
+			
+			
+			pulsante.setAttributi("");		//pulsante vai all'acquisto
+			pulsante.setLabel("Compra adesso");
+			pulsante.setMetodo("GET");
+			out.println(pulsante.getBottone());
+			
 		}
-	out.print("<br><br>"+indietro);
-	out.print("<BR><BR>"+logged);
+		pulsante.setPagina("index.jsp");//bottone Carrello
+		pulsante.setAttributi("");
+		pulsante.setLabel("Indietro");
+		pulsante.setMetodo("GET");
+		out.println(pulsante.getBottone());
+	
+		pulsante.setPagina("Logout");//bottone Carrello
+		pulsante.setAttributi("");
+		pulsante.setLabel("Logout");
+		pulsante.setMetodo("GET");
+		out.println(pulsante.getBottone());
+		
 }
 else //utente anonimo
 {
 	out.println("Ciao nuovo utente, <br> ti ricordiamo che prima di procedere all'acquisto devi registrarti.<br>");
+	
+	
+	pulsante.setPagina("paginaPersonale.jsp");//bottone pagina iscrizione
+	pulsante.setAttributi("");
+	pulsante.setLabel("Pagina di Registrazione");
+	pulsante.setMetodo("GET");
+	out.println(pulsante.getBottone());
+	
+	
 	out.print("Stai osservando l'oggetto: ");
 	
-	//Istanzio la lista prodotti 
-		ArrayList<Prodotto> lista= new ArrayList<Prodotto>();
-		lista=(ArrayList<Prodotto>)session.getAttribute("lista_prodotti");
-		if (lista.isEmpty())
-		{
-			System.out.print("Lista vuota");
-			response.sendRedirect("/BasiIng2/Logout");
-		}
-		else
-		{
-			out.println("<table border=1>");
-			Prodotto p= new Prodotto();
-			Database db=new Database();
-			p=db.getProdotto(codice);
-			out.println("<tr><td><br>Nome: "+p.getNome()+"</td>");
-			out.println("<td>URL immagine "+p.getImmagine()+"</td>");
-			out.println("<td><img src=\""+p.getImmagine()+"\" width=200 height=200></td>");
-			out.println("<td>Prezzo "+p.getPrezzo()+"</td>");
-			out.println("</table>");
-			out.print("<br>Quantità acquistabile <select name=\"quantita\"> ");
-			out.println("<option value="+p.getPezzi()+">"+p.getPezzi()+"</option></select>");
-			
-			out.print("<BR><BR>"+not_logged);
-		}
+		
+	Prodotto p= new Prodotto();	//stampa oggetto cliccato in index
+	Database db=new Database();
+	p=db.getProdotto(codice);
+	grafica.setProdottoOsservato(p);
+	out.println(grafica.getProdottoOsservatoAnonimo());
+	
+	out.println("Potrebbe interessarti anche: ");
+	ArrayList<Prodotto> lista=db.ProdottiPreferiti(2, p.getCategoria());
+	grafica.setListaProdotti(lista);
+	out.println(grafica.getListaProdotti());
+	
+	pulsante.setPagina("index.jsp");	//bottone indietro
+	pulsante.setAttributi("");
+	pulsante.setLabel("Indietro");
+	pulsante.setMetodo("GET");
+	out.println(pulsante.getBottone());
+	db.closeConnection();
 }
 
+
+out.println(grafica.getChiusura());
 %>
 
-</body>
-</html>

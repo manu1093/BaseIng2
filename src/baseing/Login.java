@@ -23,7 +23,7 @@ public class Login extends HttpServlet {
     /**
      * @see HttpServlet#HttpServlet()
      */
-	public int num_prod=3;
+	public int num_prod=6;
 	
 	
     public Login() {
@@ -53,6 +53,7 @@ public class Login extends HttpServlet {
 			u.setNickname((String) request.getParameter("nickname"));
 			session.setAttribute("utente",(Cliente) u);
 			db.refreshUtente(session,(Cliente) u);
+			db.contatoreLogin(u.getNickname());
 			ArrayList<Prodotto> l=new ArrayList<Prodotto>();
 			l=db.ProdottiPreferiti(num_prod, (Cliente) u );
 			l.addAll(db.ProdottiACaso(num_prod-l.size()));
@@ -63,16 +64,16 @@ public class Login extends HttpServlet {
 		}
 		else if (u instanceof Admin)
 		{
-			session.setAttribute("utente",(Admin) u);
+			session.setAttribute("admin",(Admin) u);
 			db.refreshAdmin(session, (Admin) u);
 			System.out.println("login.jsp debug admin"+u.getNickname()+u.getPass());
 			response.sendRedirect("/BaseIng2/AdminList.jsp");
 		}
 		else if (u instanceof Impiegato)
 		{
-			session.setAttribute("utente", (Impiegato) u);
+			session.setAttribute("impiegato", (Impiegato) u);
 			db.refreshImpiegato(session, (Impiegato) u);
-			System.out.println("login.jsp debug impiegato"+u.getNickname()+u.getPass());
+			response.sendRedirect("/BaseIng2/ImpiegatoList.jsp");
 		}
 		else
 		{

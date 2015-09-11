@@ -8,6 +8,7 @@ package database;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Statement;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -26,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 /**
  *
  * @author Manu
@@ -38,7 +40,7 @@ public class Database {
 		
 	      try {
 	         Class.forName("org.postgresql.Driver");
-	         conn = DriverManager.getConnection("jdbc:postgresql://dbserver.scienze.univr.it/dblab54","userlab54", "cinquantaquattroSH");//jdbc:postgresql://localhost/stefano83","stefano83", "434343");
+	         conn = DriverManager.getConnection("jdbc:postgresql://dbserver.scienze.univr.it/dblab54","userlab54", "cinquantaquattroSH");//"jdbc:postgresql://localhost/stefano83","stefano83", "434343"
 	         conn.setAutoCommit(true);
 	         //System.out.println("Opened database successfully");
 	      } catch (Exception e) {
@@ -48,7 +50,16 @@ public class Database {
 	      }
 	      System.out.println("Opened database successfully");
 	   }
-	
+	public void closeConnection()
+	{
+		try {
+			this.conn.close();
+			System.out.println("Connessione chiusa");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	ResultSet getRsQuery(String query)//restituisce l'intera Lista risultante dalla query
 	{
@@ -83,7 +94,7 @@ public class Database {
              ArrayList <Prodotto>l=new ArrayList<>();
         try {
             while(s.next())
-                l.add(new Prodotto(s.getString("codice"),new URL(s.getString("url_immagine")),s.getString("nome"),s.getInt("pezzi"),s.getFloat("prezzo"),s.getInt("punti"),s.getString("categoria"),s.getInt("prezzo_premio")));
+                l.add(new Prodotto(s.getString("codice"),new URL(s.getString("url_immagine")),s.getString("nome"),s.getInt("pezzi"),s.getFloat("prezzo"),s.getInt("punti"),s.getString("categoria"),s.getInt("prezzo_premio"),s.getString("descrizione")));
         } catch (SQLException ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MalformedURLException ex) {
@@ -91,19 +102,53 @@ public class Database {
         }
             return l;
         }
-        public void inserisciProdotto(Prodotto p){
-        try {
-            PreparedStatement pr=this.conn.prepareStatement("INSERT INTO prodotto (codice, nome, pezzi, url_immagine, prezzo, punti,categoria) VALUES (?,?,?,?,?,?,?);");
-            pr.setString(1,p.getCodice());
-            pr.setString(2,p.getNome());
-            pr.setInt(3,p.getPezzi());
-            pr.setString(4,p.getImmagine().toString());
-            pr.setFloat(5,p.getPrezzo());
-            pr.setInt(6, p.getPunti());
-            pr.setString(7,p.getCategoria());
-        } catch (SQLException ex) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        public Boolean inserisciProdotto(Prodotto p){ //controllo prodotto esistente!!!
+        	
+        	try
+        	{
+        		ResultSet s=this.conn.createStatement().executeQuery("select * from prodotto where codice='"+p.getCodice()+"';");
+                if(s.next())
+                {
+                	if(this.conn.createStatement().executeUpdate("update prodotto set nome='"+p.getNome()+"', pezzi='"+p.getPezzi()
+                	+"', url_immagine='"+p.getImmagine().toString()+"',prezzo='"+p.getPrezzo()+"', punti='"+p.getPunti()
+                	+"', categoria='"+p.getCategoria()+"', prezzo_premio='"+p.getPuntiVincita()
+                	+"', descrizione='"+p.getDescrizione()+"' where codice='"+p.getCodice()+"';")==0)
+                	{
+                		return true;
+                	}
+                	
+                		return true;
+                }
+                else
+                {
+                	try {
+                        PreparedStatement pr=this.conn.prepareStatement("INSERT INTO prodotto (codice, nome, pezzi, url_immagine, prezzo, punti,categoria,prezzo_premio,descrizione) VALUES (?,?,?,?,?,?,?,?,?);");
+                        pr.setString(1,p.getCodice());
+                        pr.setString(2,p.getNome());
+                        pr.setInt(3,p.getPezzi());
+                        pr.setString(4,p.getImmagine().toString());
+                        pr.setFloat(5,p.getPrezzo());
+                        pr.setInt(6, p.getPunti());
+                        pr.setString(7,p.getCategoria());
+                        pr.setInt(8,p.getPuntiVincita());
+                        pr.setString(9, p.getDescrizione());
+                        if(pr.executeUpdate()<1)
+                        	return false;
+                        else
+                        	return true;
+                    	} 
+                	catch (SQLException ex) {
+                        Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+                        return false;
+                    }
+                }
+        	}
+        	catch(Exception e)
+        	{
+        		System.out.println(e.toString()+"Errore SQL inserisciProdotto");
+        		return false;
+        	}
+			
         }
         
         public Prodotto getProdotto(String codice){
@@ -111,6 +156,8 @@ public class Database {
             
         }
        
+        
+        
         public Prodotto CarrelloToProdotto(Carrello c)        {
             return this.getProdotto(c.getProdotto());
         }
@@ -138,7 +185,13 @@ public class Database {
             }
         
         */
+        public ArrayList<Prodotto> ProdottiDaOrdinare(int n){
+            ArrayList<Prodotto>l=this.toProdottiCollection(this.getRsQuery("select codice,nome,pezzi,url_immagine,prezzo,punti,categoria,prezzo_premio,descrizione from prodotto where pezzi<='"+n+"';"));
+            return l;
+        }
+        
         public ArrayList<Prodotto> ricercaProdotti(String match){//FUNZIONA V2.0
+        	match=match.toLowerCase();
         ArrayList <Prodotto> l=new ArrayList<Prodotto>();
          try {    
              ResultSet s=this.conn.createStatement().executeQuery("select * from prodotto where prezzo is not null and pezzi>0;");
@@ -146,8 +199,8 @@ public class Database {
              while(s.next())
                 for(int i=0;i<match.split(" ").length;i++){
                     String temp=match.split(" ")[i];
-                     if((" "+s.getString("nome")).contains((" "+temp).substring(0,temp.length()-1))){
-                         l.add(new Prodotto(s.getString("codice"),new URL(s.getString("url_immagine")),s.getString("nome"),s.getInt("pezzi"),s.getFloat("prezzo"),s.getInt("punti"),s.getString("categoria"),s.getInt("prezzo_premio")));
+                     if(((" "+s.getString("nome")).toLowerCase()).contains((" "+temp).substring(0,temp.length()-1))){
+                         l.add(new Prodotto(s.getString("codice"),new URL(s.getString("url_immagine")),s.getString("nome"),s.getInt("pezzi"),s.getFloat("prezzo"),s.getInt("punti"),s.getString("categoria"),s.getInt("prezzo_premio"),s.getString("descrizione")));
                          break;
                     }
                 }
@@ -172,7 +225,7 @@ public class Database {
             return this.ProdottiPreferiti(n,c.getCategoria());
         }
         public ArrayList<Prodotto> ProdottiPreferiti(int n,String categoriaPreferita){
-            ArrayList<Prodotto>l=this.toProdottiCollection(this.getRsQuery("select codice,nome,pezzi,url_immagine,prezzo,prodotto.punti,categoria,prezzo_premio from prodotto where categoria='"+categoriaPreferita+"' and pezzi > 0 ;"));
+            ArrayList<Prodotto>l=this.toProdottiCollection(this.getRsQuery("select codice,nome,pezzi,url_immagine,prezzo,prodotto.punti,categoria,prezzo_premio,descrizione from prodotto where categoria='"+categoriaPreferita+"' and pezzi > 0 ;"));
             while(l.size()>n)
                 l.remove((int)(Math.random()*l.size()));
             return l;
@@ -253,10 +306,10 @@ public class Database {
                 }
                 else				//la login non è presente
                 {
-	                PreparedStatement t=this.conn.prepareStatement("insert into utente nickname=?,pass=? and tipo=?;");
+	                PreparedStatement t=this.conn.prepareStatement("insert into utente (nickname,pass,tipo) values (?,?,?);");
 	                    t.setString(1,nickname);
 	                    t.setString(2,password);
-	                    t.setString(3, tipo);
+	                    t.setString(3,tipo);
 	                    t.execute();
 	                    return true;
                 }
@@ -271,7 +324,10 @@ public class Database {
             while(s.next()){
                 if(s.getString(1).equals(t.getNickname()) && s.getString(2).equals(t.getPass())){
                     if(s.getString("tipo").equals("cliente"))
+                    {
                         return new Cliente(s.getString("via"),s.getString("numero"),s.getString("citta"),s.getString("carta_credito"),s.getString("scadenza_carta"),s.getString("PIN"),s.getInt("punti"),s.getString("categoria_preferita"),s.getString("nickname"),s.getString("pass"));
+                    
+                    }
                     if(s.getString("tipo").equals("amministratore"))
                         return new Admin(s.getString("nickname"),s.getString("pass"));
                     if(s.getString("tipo").equals("impiegato"))
@@ -284,6 +340,28 @@ public class Database {
         }
         return null;
         }
+       
+       public void contatoreLogin(String nickname)
+       {
+    	   PreparedStatement ssss;
+		try {
+			ssss = this.conn.prepareStatement("insert into login (nickname,data_log,ora_log) values (?,?,?);");
+			Calendar c=Calendar.getInstance();
+	       	Date date=new Date();
+	       	DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
+	       	ssss.setString(2,dateFormat.format(date));
+           ssss.setString(1,nickname);
+           dateFormat = new SimpleDateFormat("HH:mm:ss");
+           ssss.setString(3,dateFormat.format(date));
+           ssss.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+       	
+	       	
+    	   
+       }
        
         public Cliente getCliente(String nickname){
         try {
@@ -350,8 +428,8 @@ public class Database {
             
             ResultSet s=this.getRsQuery("select * from prodotto,carrello where id_oggetto=codice and carrello.utente='"+c.getNickname()+"';");
             while(s.next())
-                h.put(new Prodotto(s.getString("codice"),new URL(s.getString("url_immagine")),s.getString("nome"),s.getInt("pezzi"),s.getFloat("prezzo"),s.getInt("punti"),s.getString("categoria"),s.getInt("prezzo_premio")),s.getInt("quantita"));
-            
+                h.put(new Prodotto(s.getString("codice"),new URL(s.getString("url_immagine")),s.getString("nome"),s.getInt("pezzi"),s.getFloat("prezzo"),s.getInt("punti"),s.getString("categoria"),s.getInt("prezzo_premio"),s.getString("descrizione")),s.getInt("quantita"));
+          
         } catch (SQLException ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MalformedURLException ex) {
@@ -376,17 +454,21 @@ public class Database {
                   this.conn.createStatement().executeUpdate("delete from carrello where id="+t.getInt("id")+";");
                   this.conn.createStatement().executeUpdate("update prodotto set pezzi=pezzi-"+t.getInt(2)+" where codice='"+t.getString(4)+"';");
                   this.conn.createStatement().executeUpdate("update utente set punti=punti+"+((db.getProdotto(t.getString(4))).getPunti())*t.getInt(2)+" where nickname='"+t.getString(3)+"';");
-                  PreparedStatement ssss=this.conn.prepareStatement("insert into acquisto (data_ac,quantita,utente,id_oggetto) values (?,?,?,?);");
+                  PreparedStatement ssss=this.conn.prepareStatement("insert into acquisto (data_ac,quantita,utente,id_oggetto,ora_ac) values (?,?,?,?,?);");
                   Calendar c=Calendar.getInstance();
+                  
               	  Date date=new Date();
               	  ssss.setDate(1, new java.sql.Date(date.getTime()));
                   ssss.setInt(2, t.getInt(2));
                   ssss.setString(3, t.getString(3));
                   ssss.setString(4, t.getString(4));
+                  DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+                  ssss.setString(5,dateFormat.format(date) );
                   ssss.execute();
                           
               }
               this.conn.commit();
+              db.closeConnection();
             }
             catch (SQLException ex) {
             	Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
@@ -403,7 +485,7 @@ public class Database {
               this.conn.createStatement().executeUpdate("update prodotto set pezzi=(pezzi-"+quantita+") where codice='"+codice+"';");
               this.conn.createStatement().executeUpdate("update utente set punti=punti-"+((db.getProdotto(codice)).getPuntiVincita())*quantita+" where nickname='"+c.getNickname()+"';");
               this.conn.commit();
-              
+              db.closeConnection();
             }
             catch (SQLException ex) {
             	Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
@@ -413,6 +495,28 @@ public class Database {
         
         public ArrayList<Prodotto> visualizzaListaPremi(){           
            return this.toProdottiCollection(this.getRsQuery("select * from Prodotto where prezzo_premio is not null"));       
+        }
+        
+        public Categoria getCategoria(String nome)
+        {
+        	Categoria c=new Categoria();
+        	try {
+				ResultSet s=this.conn.createStatement().executeQuery("select descrizione from categoria where nome='"+nome+"';");
+				if(s.next())
+				{
+					c.setNome(nome);
+					c.setDescrizione(s.getString("descrizione"));
+				}
+				else
+				{
+					c.setNome("");
+					c.setDescrizione("");
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	return c;
         }
        
         public ArrayList<String> visualizzaCategorie(){
@@ -432,10 +536,14 @@ public class Database {
                 
         }
         
-        public void inserisciCategoria(String s) throws SQLException{
-      
-            this.conn.createStatement().execute("insert into categoria values('"+s+"');");       
-       
+        public Boolean inserisciCategoria(String nome,String descrizione) throws SQLException{
+        	if(nome==null || nome=="")
+        	{
+        		return false;
+        	}
+        	else{
+        		return this.conn.createStatement().execute("insert into categoria (nome,descrizione) values('"+nome+"','"+descrizione+"');");       
+        	}
         }
         
         public void rimuoviCategoria(String s) throws SQLException{
@@ -500,6 +608,7 @@ public class Database {
     		Utente u= new Utente(utente.getNickname(),utente.getPass());
     		session.removeAttribute("utente");
     		session.setAttribute("utente", (Cliente) db.login(u));
+    		db.closeConnection();
        }
        public void refreshAdmin(HttpSession session, Admin utente)
        {
@@ -507,6 +616,7 @@ public class Database {
     		Utente u= new Utente(utente.getNickname(),utente.getPass());
     		session.removeAttribute("utente");
     		session.setAttribute("utente", (Admin) db.login(u));
+    		db.closeConnection();
        }
        public void refreshImpiegato(HttpSession session, Impiegato utente)
        {
@@ -514,7 +624,20 @@ public class Database {
     		Utente u= new Utente(utente.getNickname(),utente.getPass());
     		session.removeAttribute("utente");
     		session.setAttribute("utente", (Impiegato) db.login(u));
+    		db.closeConnection();
        }
+       public void azzeraQuantitaProdotto(String s)
+       {
+    	   Database db=new Database();
+    	   try {
+			this.conn.createStatement().executeUpdate("update prodotto set pezzi=0 where codice='"+s+"';");
+			db.closeConnection();
+    	   } catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+       }
+       
         
         public static void main(String args[]) throws SQLException{
           // System.out.println(new Database().ricercaProdotti("notebook R522"));
@@ -534,4 +657,112 @@ public class Database {
            }*/
             new Database().aggiungiAlCarrello(new Carrello("ag349512","gaetano78",5));
         }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        //Inizio statistiche Admin
+        
+        
+        /*
+        public HashMap<Cliente,Double> SoldiSpesiClienti(){
+            HashMap<Cliente,Double> l=new HashMap<Cliente,Double>();
+            ResultSet s=this.getRsQuery("select nickname,pass,via,utente.numero,citta,carta_credito,scadenza_carta,PIN,utente.punti,categoria_preferita,sum(prezzo) as soldi_spesi "
+                    + "from Utente,Acquisto,Prodotto "
+                    + "where nickname=utente and id_oggetto=codice "
+                    + "group by nickname,pass,via,utente.numero,citta,carta_credito,scadenza_carta,PIN,utente.punti,categoria_preferita "
+                    + "order by soldi_spesi desc;"   );
+         try {
+             while(s.next())
+                 l.put( new Cliente(s.getString("via"),s.getString("numero"),s.getString("citta"),s.getString("carta_credito"),s.getString("scadenza_carta"),s.getString("PIN"),s.getInt("punti"),s.getString("categoria_preferita"),s.getString("nickname"),s.getString("pass")),s.getDouble("soldi_spesi") );
+         } catch (SQLException ex) {
+             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         return l;
+        }
+        */
+        public HashMap<String,Float> getSoldiSpesiClienti(){
+            HashMap<String,Float> l=new HashMap<String,Float>();
+            ResultSet s=this.getRsQuery("select nickname,sum(prezzo) as soldi_spesi "
+                    + "from Utente,Acquisto,Prodotto "
+                    + "where nickname=utente and id_oggetto=codice "
+                    + "group by nickname "
+                    + "order by soldi_spesi desc;"   );
+         try {
+             while(s.next())
+                 l.put(s.getString("nickname")+" "+s.getFloat("soldi_spesi"),s.getFloat("soldi_spesi") );
+         } catch (SQLException ex) {
+             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         return l;
+        }
+        
+        
+        public HashMap<String,Float> getNumeroProdottiVendutiXCategoria(){
+              HashMap<String,Float> l=new HashMap<>();
+            ResultSet s=this.getRsQuery("select categoria,sum(quantita) as n_prodotti "
+                    + "from Prodotto,Acquisto "
+                    + "where codice=id_oggetto "
+                    + "group by categoria;");
+         try {
+             while(s.next())
+                 l.put(s.getString("categoria")+" "+s.getInt("n_prodotti"),new Float (s.getInt("n_prodotti")));
+         } catch (SQLException ex) {
+             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         return l;
+         }
+        
+        public HashMap<String,Float> getProdottiPiuComprati(){ // i 5 prodotti più comprati
+            HashMap<String,Float> l=new HashMap<>();
+            int i=5;
+          ResultSet s=this.getRsQuery("select id_oggetto,sum(quantita) as n_prodotti "
+                  + "from Acquisto "
+                  + "group by id_oggetto "
+                  + "order by n_prodotti desc;");
+       try {
+           while(i>0)
+           {
+        	   s.next();
+        	   l.put(s.getString("id_oggetto")+" "+s.getInt("n_prodotti")+" "+this.getProdotto(s.getString("id_oggetto")),new Float (s.getInt("n_prodotti")));
+        	   i++;
+           }
+       } catch (SQLException ex) {
+           Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+       }
+       return l;
+       }
+       
+        public HashMap<String,Float> getOraPiuLoggata(){ // i 5 prodotti più comprati
+            HashMap<String,Float> l=new HashMap<>();
+          ResultSet s=this.getRsQuery("select substring(ora_log from 1 for 2) as ora,count(*) as conto "
+          		+ "from login "
+          		+ "group by ora "
+          		+ "order by conto;");
+       try {
+           while(s.next())
+           {
+        	   l.put(s.getString("ora"),new Float (s.getInt("conto")));
+           }
+       } catch (SQLException ex) {
+           Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+       }
+       return l;
+       }
+       
+        
 }

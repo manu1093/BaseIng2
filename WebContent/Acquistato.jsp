@@ -2,58 +2,59 @@
 <%@page import="database.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+
+<jsp:useBean id="grafica" class="grafica.Grafica" scope="session"/>
+<jsp:setProperty name="grafica" property="*"/>
+<jsp:useBean id="pulsante" class="grafica.pulsante" scope="session"/>
+<jsp:setProperty name="pulsante" property="*"/>
 <jsp:useBean id="utente" class="database.Cliente" scope="session"/>
 <jsp:setProperty name="utente" property="*"/>
+<jsp:useBean id="admin" class="database.Admin" scope="session"/>
+<jsp:setProperty name="admin" property="*"/>
+<jsp:useBean id="impiegato" class="database.Impiegato" scope="session"/>
+<jsp:setProperty name="impiegato" property="*"/>
 <%! String logged="<FORM METHOD=GET ACTION=\"/BaseIng2/Logout\"><INPUT TYPE=\"submit\" value=\"Logout\"></FORM>"; %>
 <%! String indietro="<FORM METHOD=GET ACTION=\"/BaseIng2/index.jsp\"><INPUT TYPE=\"submit\" value=\"Indietro\"></FORM>"; %>
 
 <%
-String nickname=utente.getNickname();
+String nickname=utente.getNickname();	//settaggio iniziale
 Database db=new Database();
-
-//Istanzio la lista carrello
 ArrayList<Carrello> lista_carrello= new ArrayList<Carrello>();
 lista_carrello=db.visualizzaCarrello(utente);
 
 
-if (nickname==null || nickname=="" || lista_carrello.isEmpty())
+out.println(grafica.getIntestazione());
+
+if (nickname==null || nickname=="" || lista_carrello.isEmpty())	//utente non loggato o qui per sbaglio
 {
 	response.sendRedirect("/BaseIng2/Logout");
 }
 else
 {
-	if (utente.getCartaCredito()==null || utente.getPIN()==null)
+	if (utente.getCartaCredito()==null || utente.getPIN()==null)	//devono esserci i dati carta di credito 
 		response.sendRedirect("BaseIng2/paginaPersonale.jsp");
 	else
 	{
-		out.print("Grazie "+nickname+" <br>per aver acquistato ");
 		
-		for(Carrello p: lista_carrello)
-		{
-				if (p.getProdotto()==null)
-					continue;
-				else
-				{
-					out.println("<br>Nome: "+p.getProdotto());
-					//out.println(p.getProdotto());
-					out.println("<img src=\""+db.getProdotto(p.getProdotto()).getImmagine().toString()+"\" width=200 height=200>");
-					out.println("Prezzo "+db.getProdotto(p.getProdotto()).getPrezzo());
-					out.print("Quantità acquistate: "+p.getQuantita());
-					
-					db.acquistaCarrello(db.getCliente(nickname));
-					
-				}
-				
-		}
+		grafica.setCliente(utente);		//stampa oggetti del carrello da comprare 
+		grafica.setListaCarrello(lista_carrello);
+		out.print(grafica.getProdottiDaAcquistare());
+		
 		db.refreshUtente(session, utente);
-		out.println("<br><br>"+indietro);
+
+
+		pulsante.setPagina("index.jsp");//bottone Indietro
+		pulsante.setAttributi("");
+		pulsante.setLabel("Indietro");
+		pulsante.setMetodo("GET");
+		out.println(pulsante.getBottone());
+		
+		pulsante.setPagina("Logout");//bottone Premi
+		pulsante.setAttributi("");
+		pulsante.setLabel("Logout");
+		pulsante.setMetodo("GET");
+		out.println(pulsante.getBottone());
+		
 	
 	
 	}
@@ -62,7 +63,6 @@ else
 	
 	
 }
-
+db.closeConnection();
+out.println(grafica.getChiusura());
 %>
-</body>
-</html>
