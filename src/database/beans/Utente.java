@@ -3,34 +3,34 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package database;
+package database.beans;
 
 /**
  *
  * @author Manu
  */
-public class Utente {
+public abstract class Utente {
     protected String nickname;
     protected String pass;
     protected boolean attivo=true;
     
-    public Utente(){
+    protected Utente(){
         nickname="";
         pass="";
     }
 
-    public Utente(String nickname, String pass,boolean attivo) {
+    protected Utente(String nickname, String pass,boolean attivo) {
         this.nickname = nickname;
         this.pass = pass;
         this.attivo=attivo;
     }
-    public Utente(String nickname, String pass) {
+    protected Utente(String nickname, String pass) {
         this.nickname = nickname;
         this.pass = pass;
         
     }
 
-    public String getNickname() {
+    public  String getNickname() {
         return nickname;
     }
 

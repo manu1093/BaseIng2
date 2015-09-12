@@ -2,18 +2,41 @@
     pageEncoding="UTF-8"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="database.*"%>
-
+<%@page import="database.beans.*"%>
 <jsp:useBean id="grafica" class="grafica.Grafica" scope="session"/>
 <jsp:setProperty name="grafica" property="*"/>
-<jsp:useBean id="pulsante" class="grafica.pulsante" scope="session"/>
+<jsp:useBean id="pulsante" class="grafica.Pulsante" scope="session"/>
 <jsp:setProperty name="pulsante" property="*"/>
-<jsp:useBean id="utente" class="database.Cliente" scope="session"/>
+<jsp:useBean id="utente" class="database.beans.Cliente" scope="session"/>
 <jsp:setProperty name="utente" property="*"/>
-<jsp:useBean id="admin" class="database.Admin" scope="session"/>
+<jsp:useBean id="admin" class="database.beans.Admin" scope="session"/>
 <jsp:setProperty name="admin" property="*"/>
-<jsp:useBean id="impiegato" class="database.Impiegato" scope="session"/>
+<jsp:useBean id="impiegato" class="database.beans.Impiegato" scope="session"/>
 <jsp:setProperty name="impiegato" property="*"/>
+<!DOCTYPE HTML>
+<html>
+  
+    <head>
+        <title>HOME PAGE</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="mystyle.css" rel="stylesheet" type="text/css"/>
+    </head>
+    
+    <body>
+        <div id="menuservizio">
+            
+            <div id="box-3">
+         <%
 
+        out.println(grafica.getIntestazione());
+
+        out.println(grafica.getFormRicercaPerNome()); // form di ricerca per nome
+        %>
+            </div>
+        </div>
+        <br>
+        <font face="Verdana" size ="4" color="blue">
 <% 
 
 out.println(grafica.getIntestazione());
@@ -62,3 +85,6 @@ else  //loggato
 
 out.println(grafica.getChiusura());
 %>
+</font>
+    </body>
+</html>

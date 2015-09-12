@@ -1,27 +1,26 @@
 
+<%@page import="org.jfree.chart.ChartUtilities"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="database.*"%>
 <%@page import="grafica.*"%>
-
+<%@page import="database.beans.*"%>
+<%@page import="grafica.plot.*"%>
 <%! String indietro="<FORM METHOD=GET ACTION=\"/BaseIng2/index.jsp\"><INPUT TYPE=\"submit\" value=\"Indietro\"></FORM>"; %>
 <%! String logged="<FORM METHOD=GET ACTION=\"/BaseIng2/Logout\"><INPUT TYPE=\"submit\" value=\"Logout\"></FORM>"; %>
-<jsp:useBean id="admin" class="database.Admin" scope="session"/>
+<jsp:useBean id="admin" class="database.beans.Admin" scope="session"/>
 <jsp:setProperty name="admin" property="*"/>
 <jsp:useBean id="grafica" class="grafica.Grafica" scope="session"/>
 <jsp:setProperty name="grafica" property="*"/>
-<jsp:useBean id="pulsante" class="grafica.pulsante" scope="session"/>
+<jsp:useBean id="pulsante" class="grafica.Pulsante" scope="session"/>
 <jsp:setProperty name="pulsante" property="*"/>
-<jsp:useBean id="plot1" class="grafica.Plot" scope="session"/>
-<jsp:setProperty name="plot1" property="*"/>
-<jsp:useBean id="plot2" class="grafica.Plot" scope="session"/>
-<jsp:setProperty name="plot2" property="*"/>
-<jsp:useBean id="plot3" class="grafica.Plot" scope="session"/>
-<jsp:setProperty name="plot3" property="*"/>
-<jsp:useBean id="plot4" class="grafica.Plot" scope="session"/>
-<jsp:setProperty name="plot4" property="*"/>
+<html>
+    <head>
+        <title>Admin</title>
+    </head>
+    <font face="Calibri" size="6" color="blue">
 <% 
-Database db=new Database();
+Database db= Database.getInstance();
 out.println(grafica.getIntestazione());
 
 if (!(admin.getNickname().isEmpty() || admin.getNickname()==""))
@@ -43,37 +42,24 @@ out.println(pulsante.getBottone());
 String s="";
 s=s+"<h3 align=center> Statistiche sui prodotti  </h3>";
 out.println(s);
+ArrayList <Graph>graphList=new ArrayList <Graph>();
+session.setAttribute("gl", graphList);
+Graph plot1=new DrawPieChart(db.getNumeroProdottiVendutiXCategoria(),"Categorie più gettonate dell'anno");
+graphList.add(plot1);
+out.println("<img src=\"/BaseIng2/DrawGraphServlet?numero=0\">");
+ 
 
+Graph plot2=new DrawPieChart(db.getSoldiSpesiClienti(),"Migliori Clienti dell'anno");
+graphList.add(plot2);
+out.println("<img src=\"/BaseIng2/DrawGraphServlet?numero=1\">");
 
-plot1.setHeight(400);	//setto e plotto il grafico statistica categoria più venduta
-plot1.setWidth(400);
-plot1.setTitolo("Categorie più gettonate dell'anno");
-plot1.setHashMap(db.getNumeroProdottiVendutiXCategoria());
-plot1.setTorta();
-out.println("<img src=\"/BaseIng2/statistica1?plot=plot1\">");
+Graph plot3=new DrawHistogram(db.getProdottiPiuComprati(),"Prodotti più comprati");
+graphList.add(plot3);
+out.println("<img src=\"/BaseIng2/DrawGraphServlet?numero=2\">");
 
-
-
-plot2.setHeight(400);	//setto e plotto il grafico statistica miglior utente 
-plot2.setWidth(400);
-plot2.setTitolo("Migliori Clienti dell'anno");
-plot2.setHashMap(db.getSoldiSpesiClienti());
-plot2.setIsto();
-out.println("<img src=\"/BaseIng2/statistica2?plot=plot2\">");
-
-plot3.setHeight(400);	//setto e plotto il grafico statistica miglior utente 
-plot3.setWidth(400);
-plot3.setTitolo("Prodotti più comprati");
-plot3.setHashMap(db.getProdottiPiuComprati());
-plot3.setIsto();
-out.println("<img src=\"/BaseIng2/statistica2?plot=plot3\">");
-
-plot4.setHeight(400);	//setto e plotto il grafico statistica miglior utente 
-plot4.setWidth(400);
-plot4.setTitolo("Ora di maggiore accesso");
-plot4.setHashMap(db.getOraPiuLoggata());
-plot4.setIsto();
-out.println("<img src=\"/BaseIng2/statistica2?plot=plot4\">");
+Graph plot4=new DrawHistogram(db.getOraPiuLoggata(),"Ora di maggiore accesso");
+graphList.add(plot4);
+out.println("<img src=\"/BaseIng2/DrawGraphServlet?numero=3\">");
 
 
 
@@ -84,8 +70,9 @@ else
 {
 	//non loggato
 }
-db.closeConnection();
+
 
 out.println(grafica.getChiusura());
 %>
-
+</font>
+</html>

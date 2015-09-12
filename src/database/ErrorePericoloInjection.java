@@ -7,8 +7,10 @@ package database;
 
 /**
  *
- * @author Manu
+ * @author manu
  */
-public class Premio {
-    
+public class ErrorePericoloInjection extends Exception {
+    public ErrorePericoloInjection(String s){
+        super(s+" non è un carattere valido");
+    }
 }

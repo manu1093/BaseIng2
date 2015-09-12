@@ -1,7 +1,8 @@
 package grafica;
 import database.*;
+import database.beans.*;
 import java.util.ArrayList;
-
+//PIENO DI CLOSE CONNECTION
 public class Grafica {
 	private ArrayList<Prodotto> lista;
 	private ArrayList<Carrello> listaCarrello;
@@ -56,7 +57,7 @@ public class Grafica {
 		s=s+"<FORM METHOD=POST ACTION=\"/BaseIng2/listaCategoria\">";
 		s=s+"\nSeleziona la categoria: <select name=\"categoria\">";
 		int i=0;
-		Database db=new Database();
+		Database db=Database.getInstance();
 		ArrayList<String> listaCategorie=new ArrayList<String>();
 		listaCategorie=db.visualizzaCategorie();
 		while (i<listaCategorie.size())
@@ -70,7 +71,7 @@ public class Grafica {
 		
 		
 		
-		db.closeConnection();
+		//db.closeConnection();
 		return s;
 	}
 	
@@ -79,31 +80,51 @@ public class Grafica {
 	
 	public void setListaProdotti(ArrayList<Prodotto> listaProdotti)
 	{
-		Database db=new Database();
+		Database db=Database.getInstance();
 		if (listaProdotti.isEmpty())
-			lista=db.ProdottiACaso(3);
+			lista=db.prodottiACaso(3);
 		else
 			lista=listaProdotti;
-		db.closeConnection();
+		//db.closeConnection();
 	}
 	public String getListaProdotti()//setta prima lista
 	{
 		String s="";
-		s="<table width=\"75%\" border=1 align=\"center\">\n";
+		s="<table width=\"75%\" border=1 bordercolor=\"grey\" align=\"center\">\n";
 		for(Prodotto p: this.lista)
 		{
 			if (p.getCodice()==null)
 				continue;
 			else
 			{
-				s=s+"<tr><td>Nome: "+p.getNome()+"</td>\n";
-				s=s+"\n<td>URL immagine "+p.getImmagine()+"</td>";
-				s=s+"\n<td><a href=\"/BaseIng2/Carrello.jsp?codice="+p.getCodice()+"\">\n"+
-							"<img src=\"" +p.getImmagine()+ "\" width=200 height=200>"+"</a></td>";
-				s=s+"\n<td>Prezzo "+p.getPrezzo()+"</td>";		
+				s=s+"<tr><td><center>Nome: "+p.getNome()+"<br><br>Prezzo  € "+p.getPrezzo()+"</center></td>\n";
+				//s=s+"\n<td>URL immagine "+p.getImmagine()+"</td>";
+				s=s+"\n<td><center><a href=\"/BaseIng2/Carrello.jsp?codice="+p.getCodice()+"\">\n"+
+							"<img src=\"" +p.getImmagine()+ "\" width=200 height=200>"+"</a></center></td>";
+				s=s+"\n<td><center>Punti<br>"+p.getPunti()+"</center></td>";		
 			}
 		}
 		s=s+"\n</table>";
+		
+		return s;
+	}
+	public String getAzione()//setta prima lista
+	{
+		String s="";
+		s="<table width=\"75%\" border=0 bordercolor=\"grey\" align=\"center\"><tr>\n";
+		for(Prodotto p: this.lista)
+		{
+			if (p.getCodice()==null)
+				continue;
+			else
+			{
+				s=s+"<br><td><center>"+p.getNome()+"</center>";
+				s=s+"\n<center><a href=\""+p.getCodice()+"\">\n";
+				s=s+"<img src=\"" +p.getImmagine()+ "\" width=200 height=200>"+"</a></center><br><br>\n";
+				s=s+"\n</td>";		
+			}
+		}
+		s=s+"\n</tr></table>";
 		
 		return s;
 	}
@@ -134,26 +155,28 @@ public class Grafica {
 	}
 	public String getListaCarrello()//setta prima listaCarrello
 	{
-		Database db=new Database();
+		Database db=Database.getInstance();
 		String s="";
 		s="Il tuo carrello attuale";
+                s=s+"<table><tr>";
 		for(Carrello p: listaCarrello)
 		{
 				if (p.getProdotto()==null)
 					continue;
 				else
 				{
-					s=s+"<br>Nome: "+p.getProdotto();
+					s=s+"<td>Nome: "+p.getProdotto();
 					s=s+"\n<FORM METHOD=POST ACTION=\"/BaseIng2/Rimuovi?codice="+p.getProdotto()+"\">";
 					s=s+"\n<br><img src=\""+db.getProdotto(p.getProdotto()).getImmagine().toString()+"\" width=200 height=200>";
 					s=s+"\n<br>Prezzo "+db.getProdotto(p.getProdotto()).getPrezzo();
 					s=s+"\n<br>Quantità da acquistare: "+p.getQuantita();
 					s=s+"\n<br>su +"+db.getProdotto(p.getProdotto()).getPezzi()+"disponibili";
-					s=s+"\n<br><INPUT TYPE=\"submit\" value=\"Rimuovi dal carrello\"></FORM>";
-				}
+					s=s+"\n<br><INPUT TYPE=\"submit\" value=\"Rimuovi dal carrello\"></FORM></td><td>"+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+"&nbsp;"+"</td>";
+				}  
 				
 		}
-		db.closeConnection();
+                s=s+"</tr></table>";
+		//db.closeConnection();
 		return s;
 	}
 	
@@ -223,8 +246,9 @@ public class Grafica {
 		s=s+"\nBenvenuto nella tua pagina personale, "+utente.getNickname();
 		s=s+"\nModifica pure i tuoi dati e salvali<br>";
 		s=s+"\n<form method=post action=\"/BaseIng2/InserisciDati?nickname2="+utente.getNickname()+"\">";//diamo la possibilità all'utente di cambiare il nickname, quindi fornisco in nickname2 il vecchio
-		s=s+"\nNickname: <input type=\"text\" name=\"nickname\" value=\""+utente.getNickname()+"\"><br>";
+		s=s+"\nNickname: <input type=\"text\" name=\"nickname\" value=\""+utente.getNickname()+"\" readonly><br>";
 		s=s+"\nPassword: <input type=\"password\" name=\"pass\" value=\""+utente.getPass()+"\"><br>";
+                s=s+"\nRipeti la Password: <input type=\"password\" name=\"pass2\" value=\"\"><br>";
 		s=s+"\nVia: <input type=\"text\" name=\"via\" value=\""+utente.getVia()+"\"><br>";
 		s=s+"\nNumero: <input type=\"text\" name=\"numero\" value=\""+utente.getNumero()+"\"><br>";
 		s=s+"\nCittà: <input type=\"text\" name=\"citta\" value=\""+utente.getCitta()+"\"><br>";
@@ -234,7 +258,7 @@ public class Grafica {
 		s=s+"\nPunti: <input type=\"text\" name=\"punti\" value=\""+utente.getPunti()+"\" readonly><br>";
 		s=s+"\nCategoria preferita:   ";
 		s=s+"\n<select name=\"categoria_preferita2\"> ";
-		Database db=new Database();
+		Database db=Database.getInstance();
 		ArrayList<String> l=new ArrayList<String>();
 		l=db.visualizzaCategorie();
 		int i=0;
@@ -253,7 +277,7 @@ public class Grafica {
 		
 		s=s+"\n<input type=\"submit\" value=\"Salva\">";	
 		s=s+"\n</form>";
-		db.closeConnection();
+		//db.closeConnection();
 		return s;
 	}
 	public String getFormIscrizioneAnonimo()
@@ -271,7 +295,7 @@ public class Grafica {
 		s=s+"\nPIN (4 caratteri): <input type=\"password\" name=\"pin\" maxlength=\"4\" value=\"\"><br>";
 		s=s+"\nCategoria preferita:   ";
 		s=s+"\n<select name=\"categoria_preferita2\"> ";
-		Database db=new Database();
+		Database db=Database.getInstance();
 		ArrayList<String> l=new ArrayList<String>();
 		l=db.visualizzaCategorie();
 		int i=0;
@@ -287,7 +311,7 @@ public class Grafica {
 		s=s+"\n<input type=\"submit\" value=\"Salva\">";	
 		s=s+"\n</form>";
 		
-		db.closeConnection();
+		//db.closeConnection();
 		return s;
 	}
 	
@@ -299,26 +323,28 @@ public class Grafica {
 	}
 	public String getListaPremi()
 	{
-		String s="";
+		String s="<center><table><tr>";
 		for(Prodotto p: lista_premi)
 		{
 			
-				if (p.getNome()==null)
+				if (p.getNome()==null || p.getPuntiVincita()==0 )
 					continue;
 				else
 				{
 					
-					s=s+"\n<br>Nome: "+p.getNome();
+					
 					if (utente.getPunti()<p.getPunti())
 					{//stampa solo l'immagine
-						s=s+"\n<img src=\""+p.getImmagine().toString()+"\" width=200 height=200>";
-						s=s+"\n<br> Ti mancano ancora "+ (p.getPunti()-utente.getPunti()) +" per prenotarlo";
+						s=s+"\n<td><center><img src=\""+p.getImmagine().toString()+"\" width=200 height=200><br>";
+                                                s=s+"\n<br>Nome: "+p.getNome();
+						s=s+"\n<br><br> Ti mancano ancora "+ (p.getPunti()-utente.getPunti()) +" per prenotarlo</center></td>";
 					}
 					else
-					{
-						s=s+"\n<FORM METHOD=POST ACTION=\"/BaseIng2/Prenotato.jsp?codice="+p.getCodice()+"\">";
+					{       
+                                                
+						s=s+"\n<td><center><FORM METHOD=POST ACTION=\"/BaseIng2/Prenotato.jsp?codice="+p.getCodice()+"\">";
 						s=s+"\n<img src=\""+p.getImmagine().toString()+"\" width=200 height=200>";
-						s=s+"\n<br>Punti cadauno: "+p.getPuntiVincita();
+						s=s+"\n<br><br>Punti cadauno: "+p.getPuntiVincita();
 						
 						s=s+"\n<br>Quantità da acquistare <select name=\"quantita\"> ";
 						int i=1;
@@ -329,7 +355,7 @@ public class Grafica {
 						}
 						s=s+"\n</select>";
 						
-						s=s+"\n<br><INPUT TYPE=\"submit\" value=\"Prenota il premio\"></FORM>";
+						s=s+"\n<br><br><INPUT TYPE=\"submit\" value=\"Prenota il premio\"></FORM></center></td>";
 					
 						
 						
@@ -338,6 +364,7 @@ public class Grafica {
 				}
 				
 		}
+                s=s+"</tr></table></center>";
 		return s;
 	}
 	public void setQuantita(int quantita)
@@ -354,26 +381,27 @@ public class Grafica {
 	
 	public String getProdottiDaAcquistare() //acquistato.jsp
 	{
-		String s="Grazie "+utente.getNickname()+" <br>per aver acquistato ";
-		Database db=new Database();
+		String s="<font color=\"blue\"> Grazie "+utente.getNickname()+" <br>per aver acquistato </font><center><table><tr>";
+		Database db=Database.getInstance();
 		for(Carrello p: listaCarrello)
 		{
 				if (p.getProdotto()==null)
 					continue;
 				else
 				{
-					s=s+"\n<br>Nome: "+p.getProdotto();
 					//out.println(p.getProdotto());
-					s=s+"\n<img src=\""+db.getProdotto(p.getProdotto()).getImmagine().toString()+"\" width=200 height=200>";
-					s=s+"\nPrezzo "+db.getProdotto(p.getProdotto()).getPrezzo();
-					s=s+"\nQuantità acquistate: "+p.getQuantita();
-					
+					s=s+"<td><center>\n<img src=\""+db.getProdotto(p.getProdotto()).getImmagine().toString()+"\" width=200 height=200>";
+                                        s=s+"\n<br><br>Nome: "+p.getProdotto();
+					s=s+"\n<br>Prezzo "+db.getProdotto(p.getProdotto()).getPrezzo();
+					s=s+"\n<br>Quantità acquistate: "+p.getQuantita();
+					s=s+"</center></td>";
 					db.acquistaCarrello(db.getCliente(utente.getNickname()));
 					
 				}
 				
 		}
-		db.closeConnection();
+                s=s+"</tr></table></center>";
+		//db.closeConnection();
 		return s;
 	}
 	
@@ -383,7 +411,7 @@ public class Grafica {
 		s="<FORM METHOD=POST ACTION=\"/BaseIng2/ImpiegatoInserisciProdotto\">";
 		s=s+"\nSeleziona la categoria: <select name=\"categoria\">";				//inserire l'ultima voce come "altro" per inserire una nuova categoria? 
 		int i=0;
-		Database db=new Database();
+		Database db=Database.getInstance();
 		ArrayList<String> listaCategorie=new ArrayList<String>();
 		listaCategorie=db.visualizzaCategorie();
 		while (i<(listaCategorie.size()))
@@ -410,7 +438,7 @@ public class Grafica {
 		s=s+"\n<br>Punti come premio: <input type=\"text\" name=\"puntivincita\" value=\""+p.getPuntiVincita()+"\"><br>";
 		s=s+"\n<br>Descrizione: <textarea name=\"descrizione\" rows=\"4\" cols=\"40\">"+p.getDescrizione()+"</textarea><br>";
 		s=s+"\n<br><INPUT TYPE=\"submit\" value=\"Inserisci prodotto\"></FORM>";
-		db.closeConnection();
+		//db.closeConnection();
 		return s;
 	}
 	
@@ -439,7 +467,7 @@ public class Grafica {
 	
 	public String getFormDisabilitaUtente() //usato da admin
 	{
-		Database db=new Database();
+		Database db=Database.getInstance();
 		ArrayList<String> l=new ArrayList<String>();
 		String s="";
 		s=s+"\nElimina un account: <br>";
@@ -453,12 +481,12 @@ public class Grafica {
 			i++;
 		}
 		s=s+"\n</select><input type=\"submit\" value=\"Disabilita account\"></form>";
-		db.closeConnection();
+		//db.closeConnection();
 		return s;
 	}
 	public String getFormAbilitaUtente() //usato da admin
 	{
-		Database db= new Database();
+		Database db= Database.getInstance();
 		int i=0;
 		String s="";
 		s=s+"\nAbilitare un account: <br>";
@@ -473,7 +501,7 @@ public class Grafica {
 			i++;
 		}
 		s=s+"\n</select><input type=\"submit\" value=\"Abilita account\"></form>";
-		db.closeConnection();
+		//db.closeConnection();
 		return s;
 	}
 	

@@ -3,12 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package database;
+package grafica.plot;
+
+import java.io.OutputStream;
+import org.jfree.chart.JFreeChart;
 
 /**
  *
- * @author Manu
+ * @author manu
  */
-public class ProdottoN {
-    
+public interface Graph {
+    public JFreeChart Draw();
 }

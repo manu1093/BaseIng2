@@ -1,0 +1,95 @@
+   body{
+        background: white;
+        background-repeat: no-repeat;
+        background-position: 0 0;
+        background-size:cover;
+        text-align: left;
+        padding-left: 11em;
+        font-family: Georgia, "Times New Roman",
+        Times, serif;
+        color: black;
+            }
+            
+    #box-7{
+    left:10px;
+    bottom:400px;
+            }
+    #menuservizio{ 
+    width: 100%; 
+    height: 26px;
+    background-color: grey;
+    color: white;
+}
+#box-1{  /*form login*/
+    position: absolute;
+    bottom: 400px;
+    left: 20px;
+    
+}
+
+#box-2{ /*form iscrizione*/
+    position: absolute;
+    bottom: 400px;
+    left: 110px;
+    
+}
+
+#box-3{ //form di ricerca per nome;
+    position: absolute;
+    right: 20px;
+}
+
+#box-4{
+    position: center;
+    right: 20px;
+
+}
+
+
+#box-5{  /*form carrello indietro*/
+    position: left;
+    bottom: 400px;
+    left: 20px;
+}
+
+#box-6{ /*form carrello logout*/
+    position: left;
+    bottom: 400px;
+    left: 110px;
+    
+}
+  /* table{
+            table-layout: fixed;
+            width: 400px;
+             background : ghostwhite;
+             caption-side : top;
+            text-align: left;
+            color:blueviolet;
+             border: 2px solid black;
+             border-collapse: separate;
+             border-spacing: 5px;
+            }*/
+ul.navbar { 
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  top: 2em;
+  left: 1em;
+  width: 9em }
+h1 {
+  font-family: Helvetica, Geneva, Arial,
+        SunSans-Regular, sans-serif }
+ul.navbar li {
+        background-color: grey;
+        border: 2px solid appworkspace;
+        padding: 0;
+        height: 25px;
+        width: 30px
+} 
+ul.navbar a {
+  text-decoration: none }
+a:link {
+  color: blue }
+a:visited {
+  color: purple }

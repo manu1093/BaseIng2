@@ -28,14 +28,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+
+import database.beans.*;
 /**
  *
  * @author Manu
  */
 
-public class Database {
+public class Database implements DatabaseS{
+    private  static Database DB;
     private Connection conn=null;
-    	public Database()
+    	private Database()
 	{
 		
 	      try {
@@ -50,7 +53,12 @@ public class Database {
 	      }
 	      System.out.println("Opened database successfully");
 	   }
-	public void closeConnection()
+        public static Database getInstance(){
+            if(DB==null)
+                DB=new Database();
+            return DB;
+        }
+	private void closeConnection()
 	{
 		try {
 			this.conn.close();
@@ -158,7 +166,7 @@ public class Database {
        
         
         
-        public Prodotto CarrelloToProdotto(Carrello c)        {
+        public Prodotto carrelloToProdotto(Carrello c)        {
             return this.getProdotto(c.getProdotto());
         }
         
@@ -186,11 +194,14 @@ public class Database {
         
         */
         public ArrayList<Prodotto> ProdottiDaOrdinare(int n){
-            ArrayList<Prodotto>l=this.toProdottiCollection(this.getRsQuery("select codice,nome,pezzi,url_immagine,prezzo,punti,categoria,prezzo_premio,descrizione from prodotto where pezzi<='"+n+"';"));
+            ArrayList<Prodotto>l=this.toProdottiCollection(this.getRsQuery("select codice,nome,pezzi,url_immagine,prezzo,punti,categoria,prezzo_premio,descrizione from prodotto where pezzi<='"+n+"'  order by pezzi;"));
             return l;
         }
         
-        public ArrayList<Prodotto> ricercaProdotti(String match){//FUNZIONA V2.0
+    @Override
+         public ArrayList<Prodotto> ricercaProdotti(String match){
+            //FUNZIONA V2.0
+      
         	match=match.toLowerCase();
         ArrayList <Prodotto> l=new ArrayList<Prodotto>();
          try {    
@@ -212,7 +223,7 @@ public class Database {
           return l; 
         }
        
-        public ArrayList<Prodotto> ProdottiACaso(int n){
+        public ArrayList<Prodotto> prodottiACaso(int n){
             ArrayList<Prodotto>l=this.toProdottiCollection(this.getRsQuery("select * from prodotto where pezzi > 0 ;"));
             while(l.size()>n)
                 l.remove((int)(Math.random()*l.size()));
@@ -221,11 +232,18 @@ public class Database {
         
         
         
-         public ArrayList<Prodotto> ProdottiPreferiti(int n,Cliente c){//
-            return this.ProdottiPreferiti(n,c.getCategoria());
+         public ArrayList<Prodotto> prodottiPreferiti(int n,Cliente c){//
+            return this.prodottiPreferiti(n,c.getCategoria());
         }
-        public ArrayList<Prodotto> ProdottiPreferiti(int n,String categoriaPreferita){
+        public ArrayList<Prodotto> prodottiPreferiti(int n,String categoriaPreferita){
             ArrayList<Prodotto>l=this.toProdottiCollection(this.getRsQuery("select codice,nome,pezzi,url_immagine,prezzo,prodotto.punti,categoria,prezzo_premio,descrizione from prodotto where categoria='"+categoriaPreferita+"' and pezzi > 0 ;"));
+            while(l.size()>n)
+                l.remove((int)(Math.random()*l.size()));
+            return l;
+        }
+        
+        public ArrayList<Prodotto> prodottoAction(int n,String categoriaPreferita){
+            ArrayList<Prodotto>l=this.toProdottiCollection(this.getRsQuery("select codice,nome,pezzi,url_immagine,prezzo,prodotto.punti,categoria,prezzo_premio,descrizione from prodotto where categoria='"+categoriaPreferita+"';"));
             while(l.size()>n)
                 l.remove((int)(Math.random()*l.size()));
             return l;
@@ -259,12 +277,12 @@ public class Database {
         public Boolean inserisciCliente(Cliente h){
             
         try {
-        	ResultSet s=this.conn.createStatement().executeQuery("select * from utente where nickname='"+h.nickname+"' and attivo=FALSE;");
+        	ResultSet s=this.conn.createStatement().executeQuery("select * from utente where nickname='"+h.getNickname()+"' and attivo=FALSE;");
             if(s.next())
             {
-            	this.conn.createStatement().execute("delete from utente where nickname='"+h.nickname+"';");
+            	this.conn.createStatement().execute("delete from utente where nickname='"+h.getNickname()+"';");
             }
-            s=this.conn.createStatement().executeQuery("select * from utente where nickname='"+h.nickname+"';");
+            s=this.conn.createStatement().executeQuery("select * from utente where nickname='"+h.getNickname()+"';");
             if(s.next())		//non fa nulla
             {
             	return false;
@@ -318,11 +336,17 @@ public class Database {
                 return false;
             }
             }
-       public Utente login(Utente t){
+      
+    @Override
+       public Utente login(String nickname,String pass){
+        
+          
+           
+          
             ResultSet s=this.getRsQuery("select * from utente where attivo=TRUE;");
         try {
             while(s.next()){
-                if(s.getString(1).equals(t.getNickname()) && s.getString(2).equals(t.getPass())){
+                if(s.getString(1).equals(nickname) && s.getString(2).equals(pass)){
                     if(s.getString("tipo").equals("cliente"))
                     {
                         return new Cliente(s.getString("via"),s.getString("numero"),s.getString("citta"),s.getString("carta_credito"),s.getString("scadenza_carta"),s.getString("PIN"),s.getInt("punti"),s.getString("categoria_preferita"),s.getString("nickname"),s.getString("pass"));
@@ -602,30 +626,7 @@ public class Database {
     	   
        }
        
-       public void refreshUtente(HttpSession session, Cliente utente)
-       {
-    	    Database db=new Database();
-    		Utente u= new Utente(utente.getNickname(),utente.getPass());
-    		session.removeAttribute("utente");
-    		session.setAttribute("utente", (Cliente) db.login(u));
-    		db.closeConnection();
-       }
-       public void refreshAdmin(HttpSession session, Admin utente)
-       {
-    	    Database db=new Database();
-    		Utente u= new Utente(utente.getNickname(),utente.getPass());
-    		session.removeAttribute("utente");
-    		session.setAttribute("utente", (Admin) db.login(u));
-    		db.closeConnection();
-       }
-       public void refreshImpiegato(HttpSession session, Impiegato utente)
-       {
-    	    Database db=new Database();
-    		Utente u= new Utente(utente.getNickname(),utente.getPass());
-    		session.removeAttribute("utente");
-    		session.setAttribute("utente", (Impiegato) db.login(u));
-    		db.closeConnection();
-       }
+       
        public void azzeraQuantitaProdotto(String s)
        {
     	   Database db=new Database();
@@ -647,7 +648,7 @@ public class Database {
            // System.out.println(new Database().login(new Utente("admin","fghh")));
            // String s=new Database().login(new Impiegato("lav05","merengue")).toString();
            // System.out.println("s = " + s);
-           // System.out.println(new Database().ProdottiPreferiti(3,"telefonia"));
+           // System.out.println(new Database().prodottiPreferiti(3,"telefonia"));
             /*
             HashMap <Prodotto,Integer> h=new Database().carrelloUtente(null);
            for(Prodotto p:h.keySet()){
@@ -763,6 +764,8 @@ public class Database {
        }
        return l;
        }
+
+    
        
         
 }

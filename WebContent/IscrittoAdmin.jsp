@@ -2,16 +2,17 @@
     pageEncoding="UTF-8"%>
     <%@page import="java.util.ArrayList"%>
     <%@page import="database.*"%>
+    <%@page import="database.beans.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>InsertTitle</title>
 </head>
 <body>
-<jsp:useBean id="admin" class="database.Admin" scope="session"/>
+<jsp:useBean id="admin" class="database.beans.Admin" scope="session"/>
 <jsp:setProperty name="admin" property="*"/>
-<jsp:useBean id="impiegato" class="database.Impiegato" scope="session"/>
+<jsp:useBean id="impiegato" class="database.beans.Impiegato" scope="session"/>
 <jsp:setProperty name="impiegato" property="*"/>
 
 <%! String indietro="<FORM METHOD=GET ACTION=\"/BaseIng2/AdminList.jsp\"><INPUT TYPE=\"submit\" value=\"Indietro\"></FORM>"; %>
@@ -26,16 +27,16 @@ if (!(admin.getNickname().isEmpty() || admin.getNickname()==""))
 		response.sendRedirect("/BaseIng2/iscrizioneAdmin.jsp");
 	else
 	{
-		Database db=new Database();
+		Database db= Database.getInstance();
 		if (db.inserisciUtente(nickname, password, tipo))
 			{
 				out.println("<br>"+indietro);
-				db.closeConnection();
+				//db.closeConnection();
 			}
 		else
 		{
 			response.sendRedirect("/BaseIng2/iscrizioneAdmin.jsp");
-			db.closeConnection();
+			//db.closeConnection();
 		}
 	}
 

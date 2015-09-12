@@ -1,17 +1,22 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="database.*"%>
 <%@page import="grafica.*"%>
+<%@page import="database.beans.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
 
 <jsp:useBean id="grafica" class="grafica.Grafica" scope="session"/>
 <jsp:setProperty name="grafica" property="*"/>
-<jsp:useBean id="pulsante" class="grafica.pulsante" scope="session"/>
+<jsp:useBean id="pulsante" class="grafica.Pulsante" scope="session"/>
 <jsp:setProperty name="pulsante" property="*"/>
-<jsp:useBean id="impiegato" class="database.Impiegato" scope="session"/>
+<jsp:useBean id="impiegato" class="database.beans.Impiegato" scope="session"/>
 <jsp:setProperty name="impiegato" property="*"/>
-
+<html>
+    <head>
+        <title>Impiegato</title>
+    </head>
+    <font face="Calibri" size="6" color="blue">
 
 
 <% 
@@ -26,11 +31,11 @@ if (request.getParameter("codice")==null)
 }
 else
 {
-	Database db=new Database();
+	Database db= Database.getInstance();
 	Prodotto p=new Prodotto();
 	p=db.getProdotto(request.getParameter("codice"));
 	out.println(grafica.getInserisciProdotti(p));
-	db.closeConnection();
+	//db.closeConnection();
 	
 }
 
@@ -54,7 +59,7 @@ out.println(grafica.getFormSogliaProdotti());
 out.println("<br><br>");
 
 
-Database db=new Database();
+Database db= Database.getInstance();
 if(quantita==null || quantita=="")
 {
 	grafica.setListaProdotti(db.ProdottiDaOrdinare(10));		//setto e stampo la lista carrello
@@ -63,7 +68,7 @@ else
 {
 	grafica.setListaProdotti(db.ProdottiDaOrdinare(Integer.parseInt(quantita)));
 }
-db.closeConnection();
+//db.closeConnection();
 out.print(grafica.getImpiegatoListaProdotti());
 
 
@@ -72,3 +77,5 @@ out.println(grafica.getChiusura());
 
 %>
 
+</font>
+</html>

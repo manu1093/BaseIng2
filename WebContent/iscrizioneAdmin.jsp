@@ -2,14 +2,15 @@
     pageEncoding="UTF-8"%>
     <%@page import="java.util.ArrayList"%>
     <%@page import="database.*"%>
+    <%@page import="database.beans.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>InsertTitle</title>
 </head>
 <body>
-<jsp:useBean id="admin" class="database.Admin" scope="session"/>
+<jsp:useBean id="admin" class="database.beans.Admin" scope="session"/>
 <jsp:setProperty name="admin" property="*"/>
 <%! String indietro="<FORM METHOD=GET ACTION=\"/BaseIng2/AdminList.jsp\"><INPUT TYPE=\"submit\" value=\"Indietro\"></FORM>"; %>
 <%! String logged="<FORM METHOD=GET ACTION=\"/BaseIng2/Logout\"><INPUT TYPE=\"submit\" value=\"Logout\"></FORM>"; %>
@@ -24,7 +25,7 @@ if (!(admin.getNickname().isEmpty() || admin.getNickname()==""))
 	
 	out.println("Ruolo:   ");
 	out.print("<select name=\"tipo\"> ");
-	Database db=new Database();
+	Database db= Database.getInstance();
 	ArrayList<String> l=new ArrayList<String>();
 	out.println("<option value=\"amministratore\">amministratore</option>"); 
 	out.println("<option value=\"impiegato\">impiegato</option>"); 
@@ -35,7 +36,7 @@ if (!(admin.getNickname().isEmpty() || admin.getNickname()==""))
 	out.println("</form>"); 
 	out.println("<br>"+indietro);
 	out.println("<br>"+logged);
-	db.closeConnection();
+	//db.closeConnection();
 }
 else
 {

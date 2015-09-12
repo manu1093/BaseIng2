@@ -1,6 +1,6 @@
 package grafica;
 
-public class pulsante {
+public class Pulsante {
 	private String label;
 	private String pagina;
 	private String attributi;

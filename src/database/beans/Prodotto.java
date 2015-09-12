@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package database;
+package database.beans;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -21,6 +21,7 @@ public class Prodotto {
     private int punti;
     private String categoria;
     private int puntiVincita;
+    private String descrizione;
     
     public Prodotto() throws MalformedURLException{
         codice="";
@@ -31,7 +32,8 @@ public class Prodotto {
     }
 
 
-    public Prodotto(String codice, URL immagine, String nome, int pezzi, float prezzo, int punti,String categoria,int puntiVincita) {
+    public Prodotto(String codice, URL immagine, String nome, int pezzi, float prezzo, int punti,String categoria,int puntiVincita,String descrizione) 
+    {
         this.codice = codice;
         this.immagine = immagine;
         this.nome = nome;
@@ -40,6 +42,7 @@ public class Prodotto {
         this.punti = punti;
         this.categoria=categoria;
         this.puntiVincita=puntiVincita;
+        this.descrizione=descrizione;
     }
 
     public String getCategoria() {
@@ -106,6 +109,13 @@ public class Prodotto {
         this.puntiVincita = puntiVincita;
     }
     
+    public String getDescrizione() {
+        return descrizione;
+    }
+
+    public void setDescrizione(String descrizione) {
+        this.descrizione = descrizione;
+    }
     @Override
     public String toString(){
        return this.nome; 
