@@ -8,8 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import database.beans.*;
-import database.Database;
-import database.*;
+import database.Data;
 /**
  * Servlet implementation class SvuotaCarrello
  */
@@ -30,7 +29,7 @@ public class SvuotaCarrello extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		Database db=Database.getInstance();
+		Data db=Data.getInstance();
 		Carrello c=new Carrello("ah58965", "franco89",1);
 		db.rimuoviDalCarrello(c);
 		response.getWriter().append("cancellato");

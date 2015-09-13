@@ -7,12 +7,13 @@ package database.beans;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 
 /**
  *
  * @author Manu
  */
-public class Prodotto {
+public class Prodotto implements Bean{
     private String codice;
     private String nome;
      private int pezzi;
@@ -119,6 +120,16 @@ public class Prodotto {
     @Override
     public String toString(){
        return this.nome; 
+    }
+
+     public HashMap<String, String> toSpecial() {
+       HashMap <String,String>m=new HashMap<String,String>();
+       m.put("categoria", categoria);
+       m.put("codice",codice);
+       m.put("descrizione",descrizione);
+      m.put("nome",nome);
+      
+       return m;
     }
 }
 

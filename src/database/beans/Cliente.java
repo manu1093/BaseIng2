@@ -6,12 +6,13 @@
 package database.beans;
 
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  *
  * @author Manu
  */
-public class Cliente extends Utente {
+public class Cliente extends Utente implements Bean{
 
     public Cliente() {
     }
@@ -124,5 +125,18 @@ public class Cliente extends Utente {
     @Override
     public String toString(){
         return "cliente:"+super.nickname;
+    }
+
+    @Override
+    public HashMap<String, String> toSpecial() {
+       HashMap <String,String>m=super.toSpecial();
+       m.put("PIN", PIN);
+       m.put("carta di credito", cartaCredito);
+       m.put("categoria",categoria);
+        m.put("citta",citta);
+         m.put("numero",numero);
+       m.put("scadenza carta",scadenza);
+       m.put("via", via);
+       return m;
     }
 }

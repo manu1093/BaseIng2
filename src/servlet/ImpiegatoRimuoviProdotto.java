@@ -1,12 +1,12 @@
 package servlet;
 
+import database.Data;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import database.*;
 
 
 /**
@@ -29,7 +29,7 @@ public class ImpiegatoRimuoviProdotto extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String codice=request.getParameter("codice");
-		Database db=Database.getInstance();
+		Data db=Data.getInstance();
 		db.azzeraQuantitaProdotto(codice);
 		response.sendRedirect("/BaseIng2/ImpiegatoList.jsp");
 	}

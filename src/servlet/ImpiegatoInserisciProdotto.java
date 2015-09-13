@@ -9,8 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import database.Database;
+import database.Data;
 import database.beans.*;
+import security.CheckedBean;
 //C'ERANO DEI CLOSE CONNCETCION
 /**
  * Servlet implementation class ImpiegatoInserisciProdotto
@@ -43,7 +44,9 @@ public class ImpiegatoInserisciProdotto extends HttpServlet {
 		p.setPunti(Integer.parseInt(request.getParameter("punti")));
 		p.setPuntiVincita(Integer.parseInt(request.getParameter("puntivincita")));
 		p.setDescrizione(request.getParameter("descrizione"));
-		Database db=Database.getInstance();
+                new CheckedBean(p);
+		Data db=Data.getInstance();
+                if(p.getCodice().equals("")||p.getCodice()==null||p.getNome().equals("")||p.getNome()==null){
 		if(db.inserisciProdotto(p)==true)
 		{
 			//db.closeConnection();
@@ -53,7 +56,11 @@ public class ImpiegatoInserisciProdotto extends HttpServlet {
 			//db.closeConnection();
 			response.sendRedirect("/BaseIng2/ImpiegatoList.jsp?errore=errore");
 			}
-		}
+		}else{
+			//db.closeConnection();
+			response.sendRedirect("/BaseIng2/ImpiegatoList.jsp?errore=errore");
+			}
+                }
 		catch(Exception e)
 		{
 			response.sendRedirect("/BaseIng2/ImpiegatoList.jsp?errore=errore");

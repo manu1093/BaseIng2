@@ -6,7 +6,7 @@
 package servlet;
 
 import database.beans.*;
-import database.Database;
+import database.Data;
 
 import javax.servlet.http.HttpSession;
 
@@ -17,7 +17,7 @@ import javax.servlet.http.HttpSession;
 public class Refresh {
    public static void refreshUtente(HttpSession session, Cliente utente)
        {
-    	    Database db=Database.getInstance();
+    	    Data db=Data.getInstance();
     		
     		session.removeAttribute("utente");
     		session.setAttribute("utente", (Cliente) db.login(utente.getNickname(),utente.getPass()));
@@ -25,14 +25,14 @@ public class Refresh {
        }
        public static void refreshAdmin(HttpSession session, Admin utente)
        {
-    	    Database db=Database.getInstance();
+    	    Data db=Data.getInstance();
     		
     		session.removeAttribute("utente");
     		session.setAttribute("utente", (Admin) db.login(utente.getNickname(),utente.getPass()));
        }
        public static void refreshImpiegato(HttpSession session, Impiegato utente)
        {
-    	    Database db=Database.getInstance();
+    	    Data db=Data.getInstance();
     		
     		session.removeAttribute("utente");
     		session.setAttribute("utente", (Impiegato) db.login(utente.getNickname(),utente.getPass()));

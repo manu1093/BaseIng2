@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import database.Database;
+import database.Data;
 
 /**
  * Servlet implementation class AdminElimina
@@ -32,7 +32,7 @@ public class AdminElimina extends HttpServlet {
 		// TODO Auto-generated method stub
 		String nickname=request.getParameter("user");
 		System.out.println("sono in adminelimina "+nickname);
-		Database db=Database.getInstance();
+		Data db=Data.getInstance();
 		db.disabilitaUtente(nickname);
 		response.sendRedirect("/BaseIng2/AdminList.jsp");
 		

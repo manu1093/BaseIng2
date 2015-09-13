@@ -38,6 +38,9 @@
         out.println(grafica.getFormRicercaPerNome()); // form di ricerca per nome
         %>
             </div>
+            
+                 <img id="logo" src="Logo.PNG" alt="" height="100%"/>
+            
         </div>
            
      <!--lista oggetti a caso-->
@@ -50,7 +53,7 @@ if (!(admin.getNickname().isEmpty() || admin.getNickname()==""))
 if (utente.getNickname().isEmpty() || utente.getNickname()=="") //non loggato
 {
 	ArrayList<Prodotto> lista= new ArrayList<Prodotto>();//dichiarazioni
-	Database db= Database.getInstance();
+	Data db= Data.getInstance();
 	if (session.getAttribute("lista_prodotti")==null)
 	{
 		lista=db.prodottiACaso(6);
@@ -65,12 +68,18 @@ if (utente.getNickname().isEmpty() || utente.getNickname()=="") //non loggato
             <font face="Verdana" size="4" color="blue">
             <%
 	out.println("Benvenuto nuovo utente"+grafica.getFormLogin());//form login
+       /* pulsante.setPagina("paginaPersonale.jsp");//bottone pagina iscrizione (iscrizione)
+	pulsante.setAttributi("");
+	pulsante.setMetodo("GET");
+	pulsante.setLabel("Pagina di Iscrizione");
+	out.println(pulsante.getBottone());*/
 %>
 </font>
         </div>
+    <%--FORM ISCRIZIONE: BOX-2--%>
+       
 <br>
 <br>
-
 
    
 <%
@@ -106,37 +115,35 @@ if (utente.getNickname().isEmpty() || utente.getNickname()=="") //non loggato
 	out.println(grafica.getFormRicercaPerCategoria());//form scelta categorie
 	
 	%>
-        </font>
-        <div id= "box-7">
-                <a href="www.facebook.com"><img src="http://orig08.deviantart.net/56a7/f/2013/104/4/f/fb_icon_by_nikesharyan-d61r5aj.png" style="width: 10%" ></a>
-</div> 
+                            <div id= "table">
+    <%        
+     
+ArrayList<Azione> azione= new ArrayList<Azione>();
+azione=db.listaAction(1);
+grafica.setAzione(azione.get(0));
+    out.println(grafica.getAzione());
+    %>
+        </div>
+
         <%
 	session.setAttribute("lista_prodotti", lista);
 	grafica.setListaProdotti(lista);
 	out.println(grafica.getListaProdotti());
 	%>
        
-	    <%--FORM ISCRIZIONE: BOX-2--%>
-        <div id="box-2">
-        <%
-	pulsante.setPagina("paginaPersonale.jsp");//bottone pagina iscrizione (iscrizione)
-	pulsante.setAttributi("");
-	pulsante.setMetodo("GET");
-	pulsante.setLabel("Pagina di Iscrizione");
-	out.println(pulsante.getBottone());
-	//db.closeConnection();
-	%>
-        </div>
-         
+	
+
         <%
 }
 else							//loggato
 {
-	Database db= Database.getInstance();				//settaggio iniziale
+	Data db= Data.getInstance();				//settaggio iniziale
 	ArrayList<Prodotto> lista= new ArrayList<Prodotto>();
 	Cliente c=new Cliente();
 	Refresh.refreshUtente(session, utente);
 	%>
+
+
         <br>
         <br>
         <font face="verdana" size="5" color="blue">
@@ -169,26 +176,10 @@ else							//loggato
 	out.println(descrizione);
 	%>
         </font>
-        
-        <font face="Calibri" size="5" color="blue">
-	<%
-	out.println(grafica.getFormRicercaPerCategoria());		//Form ricerca per categorie
-	%>
-        </font>
-        <%
-	
-	if (lista.isEmpty() || lista==null)			//Stampa lista prodotti
-	{
-		lista=db.prodottiACaso(3);
-	}
-	else
-	{
-		grafica.setListaProdotti(lista);		//setto e stampo la lista carrello
-		out.print(grafica.getListaProdotti());
-	}
-	%>
-        
-        <ul class="navbar">
+         <div id= "partesinistra">
+             <div id="navbar">
+                 <ul>
+                     
 	<%
 	pulsante.setPagina("Carrello.jsp");//bottone Carrello
 	pulsante.setAttributi("codice=");
@@ -217,19 +208,51 @@ else							//loggato
 	out.println(pulsante.getBottone());
 	%>
         </ul>
+        </div>
+        <div >
+    <%        
+     
+ArrayList<Azione> azione= new ArrayList<Azione>();
+azione=db.listaAction(1);
+grafica.setAzione(azione.get(0));
+    out.println(grafica.getAzione());
+    %>
+        </div>
+         </div>
+        <font face="Calibri" size="5" color="blue">
+	<%
+	out.println(grafica.getFormRicercaPerCategoria());		//Form ricerca per categorie
+	%>
+        </font>
+        <%
+	
+	if (lista.isEmpty() || lista==null)			//Stampa lista prodotti
+	{
+		lista=db.prodottiACaso(3);
+	}
+	else
+	{
+		grafica.setListaProdotti(lista);		//setto e stampo la lista carrello
+		out.print(grafica.getListaProdotti());
+	}
+	%>
+        
+       
         <%
 	//db.closeConnection();
 	
 }		//fine utente loggato
 
 
-Database db=Database.getInstance();
-ArrayList<Prodotto> azione= new ArrayList<Prodotto>();
-azione=db.prodottoAction(1, "azione");
-grafica.setListaProdotti(azione);
-out.println(grafica.getAzione());
+
+%>
+</font>
+
+<%
 out.println(grafica.getChiusura());
 %>
+ 
+               
 
 
 

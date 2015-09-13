@@ -13,7 +13,6 @@ import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 
 import grafica.*;
-import database.*;
 import grafica.plot.Graph;
 import grafica.plot.InvokerGraph;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class DrawGraph extends HttpServlet {
                // System.out.println("siiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
 		ArrayList <Graph> p=(ArrayList <Graph>)session.getAttribute("gl");
 		if (p==null)
-                    System.out.println("non va bene");
+                    System.out.print("");
 		else{
 			response.setContentType("image/png");
 		

@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/servlet/ImpiegatoInserisciProdotto.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/servlet/InserisciDati.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/grafica/Grafica.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/database/beans/Login.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/WebContent/ImpiegatoList.jsp</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/database/beans/Prodotto.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/servlet/ListaCategoria.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/database/Data.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/database/beans/Azione.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/database/Database.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/database/beans/Acquisto.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/database/beans/Bean.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/servlet/ImpiegatoInserisciCategoria.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/database/beans/Cliente.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/database/beans/Utente.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/database/beans/Carrello.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/security/ErroreCampoVuoto.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/WebContent/paginaPersonale.jsp</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/tests/databaseTest.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/servlet/Login.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/servlet/ImpiegatoAction.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/database/beans/Categoria.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/servlet/Aggiungi.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/database/beans/Admin.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/security/CheckedBean.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/src/database/beans/Impiegato.java</file>
+            <file>file:/C:/Users/Manu/Desktop/BaseIngNuovo3/WebContent/index.jsp</file>
+        </group>
     </open-files>
 </project-private>

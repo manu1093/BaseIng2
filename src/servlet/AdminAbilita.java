@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import database.Database;
+import database.Data;
 
 /**
  * Servlet implementation class AdminAbilita
@@ -30,7 +30,7 @@ public class AdminAbilita extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String nickname=request.getParameter("user");
-		Database db=Database.getInstance();
+		Data db=Data.getInstance();
 		db.abilitaUtente(nickname);
 		response.sendRedirect("/BaseIng2/AdminList.jsp");
 	}

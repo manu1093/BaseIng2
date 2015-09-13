@@ -9,12 +9,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  *
  * @author Manu
  */
-public class Acquisto {
+public class Acquisto implements Bean{
     private String utente;
     private String prodotto;
     private int quantita;
@@ -69,5 +70,16 @@ public class Acquisto {
         prodotto="";
         utente="";
     }
+
+    @Override
+    public HashMap<String, String> toSpecial() {
+       HashMap <String,String>m=new HashMap<String,String>();
+       m.put("ora", ora);
+       m.put("prodotto", prodotto);
+       m.put("utente",utente);
+       return m;
+    }
+
+    
     
 }

@@ -1,5 +1,8 @@
 package servlet;
 
+import database.Data;
+import security.ErrorePericoloInjection;
+import security.CheckedBase;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -10,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import database.beans.*;
-import database.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,7 +40,7 @@ public class RicercaPerNome extends HttpServlet {
 		HttpSession session=request.getSession();
 		if (oggetto==null || oggetto=="")
 		{
-			Database db=Database.getInstance();
+			Data db=Data.getInstance();
 			ArrayList<Prodotto> lista_prodotto=new ArrayList<Prodotto>();
 			lista_prodotto=db.prodottiACaso(3);
 			session.removeAttribute("lista_prodotti");
@@ -47,8 +49,11 @@ public class RicercaPerNome extends HttpServlet {
 		}
 		else
 		{
-			Database db=Database.getInstance();
+			Data db=Data.getInstance();
 			ArrayList<Prodotto> lista_prodotto=new ArrayList<Prodotto>();
+                        session.removeAttribute("lista_prodotti");
+			session.setAttribute("lista_prodotti", lista_prodotto);
+			response.sendRedirect("/BaseIng2/index.jsp");
                     try {
                         lista_prodotto=new CheckedBase().ricercaProdotti(oggetto);
                     } catch (ErrorePericoloInjection ex) {   
@@ -57,9 +62,7 @@ public class RicercaPerNome extends HttpServlet {
 			session.setAttribute("lista_prodotti", lista_prodotto);
 			response.sendRedirect("/BaseIng2/index.jsp");
                     }
-			session.removeAttribute("lista_prodotti");
-			session.setAttribute("lista_prodotti", lista_prodotto);
-			response.sendRedirect("/BaseIng2/index.jsp");
+			
 		}
 		
 	

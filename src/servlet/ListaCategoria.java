@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import database.beans.*;
-import database.Database;
+import database.Data;
 
 //TOLTO CLOSE CONNECTION
 /**
@@ -41,7 +41,7 @@ public class ListaCategoria extends HttpServlet {
 		}
 		else
 		{
-			Database db=Database.getInstance();
+			Data db=Data.getInstance();
 			ArrayList<Prodotto> lista_prodotto=new ArrayList<Prodotto>();
 			lista_prodotto=db.prodottiPreferiti(3, categoria);
 			session.removeAttribute("lista_prodotti");

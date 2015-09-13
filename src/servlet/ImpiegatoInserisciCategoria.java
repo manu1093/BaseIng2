@@ -1,5 +1,6 @@
 package servlet;
-import database.*;
+import database.Data;
+import database.beans.Categoria;
 import java.util.ArrayList;
 
 import java.io.IOException;
@@ -8,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import security.CheckedBean;
 
 /**
  * Servlet implementation class ImpiegatoInserisciCategoria
@@ -28,12 +30,14 @@ public class ImpiegatoInserisciCategoria extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
 	String categoria="";
 	String descrizione="";
 	categoria=request.getParameter("categoria");
 	descrizione=request.getParameter("descrizione");
-	Database db=Database.getInstance();
+	Data db=Data.getInstance();
 	try {
+            new CheckedBean(new Categoria(categoria,descrizione));
 		if (db.inserisciCategoria(categoria,descrizione)==true)
 			response.sendRedirect("/BaseIng2/ImpiegatoList.jsp");
 		else

@@ -26,13 +26,18 @@ public class ImpiegatoSorvegliaQuantita extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if(request.getParameter("quantita")==null || request.getParameter("quantita")=="")
+		if(request.getParameter("quantita")==null || request.getParameter("quantita").equals(""))
 		{
-			response.sendRedirect("/BaseIng2/ImpiegatoList.jsp?quantita=10");
+			
 		}
 		else
 		{
-			response.sendRedirect("/BaseIng2/ImpiegatoList.jsp?quantita="+request.getParameter("quantita"));
+                    try{
+                        Integer.valueOf(request.getParameter("quantita"));
+                        response.sendRedirect("/BaseIng2/ImpiegatoList.jsp?quantita="+request.getParameter("quantita"));
+                    }catch(NumberFormatException e){
+                        response.sendRedirect("/BaseIng2/ImpiegatoList.jsp?quantita=10");
+                    }
 		}
 			
 	}

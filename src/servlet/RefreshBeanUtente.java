@@ -1,5 +1,6 @@
 package servlet;
 
+import database.Data;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -8,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import database.beans.*;
-import database.*;
 
 /**
  * Servlet implementation class RefreshBeanUtente
@@ -50,7 +50,7 @@ public class RefreshBeanUtente extends HttpServlet {
 		}
 		
 		session.removeAttribute("utente");
-		Database db=Database.getInstance();
+		Data db=Data.getInstance();
 		session.setAttribute("utente", c);
 		
 		

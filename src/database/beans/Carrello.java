@@ -5,8 +5,10 @@
  */
 package database.beans;
 
+import java.util.HashMap;
 
-public class Carrello{
+
+public class Carrello implements Bean{
     private String prodotto;
     private String utente;
     private int quantita;
@@ -39,6 +41,15 @@ public class Carrello{
         this.prodotto = prodotto;
         this.utente = utente;
         this.quantita = quantita;
+    }
+
+    @Override
+    public HashMap<String, String> toSpecial() {
+       HashMap <String,String>m=new HashMap<String,String>();
+      
+       m.put("prodotto", prodotto);
+       m.put("utente",utente);
+       return m;
     }
             
     

@@ -5,11 +5,13 @@
  */
 package database.beans;
 
+import java.util.HashMap;
+
 /**
  *
  * @author Manu
  */
-public abstract class Utente {
+public abstract class Utente implements Bean{
     protected String nickname;
     protected String pass;
     protected boolean attivo=true;
@@ -58,6 +60,12 @@ public abstract class Utente {
     public String toString(){
         return this.nickname;
     }
-    
+    @Override
+    public HashMap<String,String> toSpecial(){
+         HashMap <String,String>m=new HashMap<String,String>();
+         m.put("pass", pass);
+         m.put("nickname", nickname);
+         return m;
+    }
     
 }

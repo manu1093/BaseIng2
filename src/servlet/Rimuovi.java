@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import database.beans.*;
-import database.Database;
+import database.Data;
 
 /**
  * Servlet implementation class Aggiungi
@@ -38,7 +38,7 @@ public class Rimuovi extends HttpServlet {
 		u=(Cliente)session.getAttribute("utente");
 		System.out.println(u.getNickname());
 		Carrello c=new Carrello(codice,u.getNickname(),1);
-		Database db=Database.getInstance();
+		Data db=Data.getInstance();
 		db.rimuoviDalCarrello(c);
 		response.sendRedirect("/BaseIng2/index.jsp");
 	}
