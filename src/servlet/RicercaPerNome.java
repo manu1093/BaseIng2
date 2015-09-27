@@ -58,10 +58,11 @@ public class RicercaPerNome extends HttpServlet {
                         lista_prodotto=new CheckedBase().ricercaProdotti(oggetto);
                     } catch (ErrorePericoloInjection ex) {   
                         lista_prodotto=db.prodottiACaso(3);
+                        }
 			session.removeAttribute("lista_prodotti");
 			session.setAttribute("lista_prodotti", lista_prodotto);
 			response.sendRedirect("/BaseIng2/index.jsp");
-                    }
+                    
 			
 		}
 		
